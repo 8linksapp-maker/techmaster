@@ -1,30 +1,25 @@
 {
     "hero": {
-        "title": "Explorar Categorias",
-        "description": "Como os vídeos curtos publicados em mídias sociais representam o cotidiano e as interações de crianças com TEA e sua relação com a enfermagem.",
-        "image": "/uploads/1774554327978-heroImg.jpg",
-        "slugs": [
-            "asdasdasdasd",
-            "monetize-seu-blog"
-        ],
-        "postLimit": null
+        "title": "Os Melhores Eletrônicos de 2026",
+        "description": "Reviews profundos e comparativos dos melhores gadgets, smartphones, smart TVs e muito mais para você comprar com inteligência.",
+        "image": "/assets/bunzo/images/hero/hero-three.jpg",
+        "slugs": [],
+        "postLimit": 4
     },
     "trending": {
-        "title": "Tendências",
-        "slugs": [
-            "monetize-seu-blog"
-        ],
+        "title": "Destaques em Alta",
+        "slugs": [],
         "postLimit": 6
     },
     "newsletter": {
-        "title": "Fique por dentro das novidades!",
-        "description": "Inscreva-se em nossa newsletter e receba todas as novidades em primeira mão",
+        "title": "Quer economizar em 2026?",
+        "description": "Inscreva-se para receber alertas de preços e reviews exclusivos dos lançamentos mais aguardados.",
         "buttonText": "inscreva-se",
-        "bgImage": "/uploads/1774551391623-newsletterImg.jpg"
+        "bgImage": "/assets/bunzo/images/banners/newsletter-two.jpg"
     },
     "recentPosts": {
-        "title": "Artigos Recentes",
-        "searchPlaceholder": "Buscar..",
+        "title": "Últimos Reviews e Guias",
+        "searchPlaceholder": "Buscar eletrônico...",
         "postLimit": 9
     },
     "partners": [
