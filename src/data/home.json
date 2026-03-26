@@ -18,7 +18,7 @@
         "bgImage": "/assets/bunzo/images/banners/newsletter-two.jpg"
     },
     "recentPosts": {
-        "title": "Últimos Reviews e Guias",
+        "title": "Posts recentes",
         "searchPlaceholder": "Buscar eletrônico...",
         "postLimit": 9
     },
