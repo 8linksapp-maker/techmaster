@@ -1,4 +1,0 @@
-Version: 1.0.2
-Date:    12-02-2023
-=====================
-1. Font family changes
