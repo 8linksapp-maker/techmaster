@@ -10,8 +10,28 @@
             "href": "/blog",
             "categories": [
                 {
-                    "label": "Teste",
-                    "href": "/"
+                    "label": "Televisores",
+                    "href": "/categoria/televisores"
+                },
+                {
+                    "label": "Smartphones",
+                    "href": "/categoria/smartphones"
+                },
+                {
+                    "label": "Informatica",
+                    "href": "/categoria/informatica"
+                },
+                {
+                    "label": "Audio",
+                    "href": "/categoria/audio"
+                },
+                {
+                    "label": "Wearables",
+                    "href": "/categoria/wearables"
+                },
+                {
+                    "label": "Eletrodomésticos",
+                    "href": "/categoria/eletrodomesticos"
                 }
             ]
         },

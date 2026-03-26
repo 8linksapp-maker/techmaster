@@ -89,6 +89,10 @@ export default function ConfigEditor() {
                         <input type="text" value={config.name} onChange={e => setConfig({ ...config, name: e.target.value })} className={inputClass} />
                     </div>
                     <div>
+                        <label className={labelClass}>Descrição do Site (Geral / Sidebar)</label>
+                        <textarea rows={3} value={config.description} onChange={e => setConfig({ ...config, description: e.target.value })} className={inputClass} placeholder="Breve resumo sobre o site..." />
+                    </div>
+                    <div>
                         <label className={labelClass}>Logo (Upload)</label>
                         <div className="flex items-center gap-4">
                             {config.logo && (
