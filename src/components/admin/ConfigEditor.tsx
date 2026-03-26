@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, AlertCircle, Loader2, Image as ImageIcon, Upload, Globe, Share2, Mail, Palette, Type, CheckCircle2 } from 'lucide-react';
+import { Save, AlertCircle, Loader2, Image as ImageIcon, Upload, Globe, Share2, Mail, Palette, Type, CheckCircle2, X } from 'lucide-react';
 import { triggerToast } from './CmsToaster';
 import { githubApi } from '../../lib/adminApi';
 
@@ -91,9 +91,23 @@ export default function ConfigEditor() {
                     <div>
                         <label className={labelClass}>Logo (Upload)</label>
                         <div className="flex items-center gap-4">
-                            {config.logo && <div className="bg-slate-50 p-2 border rounded-xl overflow-hidden self-start"><img src={config.logo} className="h-10 w-auto object-contain" /></div>}
+                            {config.logo && (
+                                <div className="relative group self-start">
+                                    <div className="bg-slate-50 p-2 border rounded-xl overflow-hidden shadow-sm">
+                                        <img src={config.logo} className="h-10 w-auto object-contain" />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setConfig({ ...config, logo: '' })}
+                                        className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                        title="Remover Logo"
+                                    >
+                                        <X className="w-3 h-3" />
+                                    </button>
+                                </div>
+                            )}
                             <label className="flex-1 flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 text-[10px] font-bold justify-center transition-all">
-                                <Upload className="w-4 h-4" /> Trocar Logo
+                                <Upload className="w-4 h-4" /> {config.logo ? 'Trocar Logo' : 'Enviar Logo'}
                                 <input type="file" className="hidden" onChange={e => setPendingLogo(e.target.files?.[0] || null)} />
                             </label>
                         </div>
