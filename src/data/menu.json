@@ -3,20 +3,27 @@
         {
             "label": "Home",
             "href": "/",
-            "showCategories": false
+            "categories": []
         },
         {
             "label": "Blog",
             "href": "/blog",
-            "showCategories": true
+            "categories": [
+                {
+                    "label": "Teste",
+                    "href": "/"
+                }
+            ]
         },
         {
             "label": "Sobre",
-            "href": "/sobre"
+            "href": "/sobre",
+            "categories": []
         },
         {
             "label": "Contato",
-            "href": "/contato"
-        },
+            "href": "/contato",
+            "categories": []
+        }
     ]
 }

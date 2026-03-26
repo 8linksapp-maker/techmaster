@@ -1,33 +1,41 @@
 {
-  "name": "Meu Blog",
-  "description": "Um blog criado com cms-core — substitua este texto pela descrição do seu site.",
-  "url": "https://meublog.com.br",
-  "author": "Autor",
-  "language": "pt-BR",
-  "logo": "",
-  "theme": {
-    "primary": "#3B82F6",
-    "accent": "#6366F1",
-    "font": "poppins",
-    "dark": "#1E293B"
-  },
-  "social": {
-    "instagram": "",
-    "twitter": "",
-    "facebook": "",
-    "pinterest": "",
-    "youtube": ""
-  },
-  "contact": {
-    "email": "",
+    "name": "Bunzo",
+    "description": "Um blog criado com cms-core — substitua este texto pela descrição do seu site.",
+    "url": "https://meublog.com.br",
+    "author": "Autor",
+    "language": "pt-BR",
+    "logo": "/uploads/logo-1774554615943.png",
+    "theme": {
+        "primary": "#4c1d95",
+        "accent": "#f472b6",
+        "font": "inter",
+        "dark": "#1E293B"
+    },
+    "social": {
+        "instagram": "",
+        "twitter": "",
+        "facebook": "",
+        "pinterest": "",
+        "youtube": "",
+        "linkedin": ""
+    },
+    "contact": {
+        "email": "",
+        "phone": "",
+        "address": "",
+        "name": ""
+    },
+    "legal": {
+        "terms_last_updated": "",
+        "privacy_last_updated": ""
+    },
+    "footer": {
+        "subscribeTitle": "Inscreva-se",
+        "subscribeBtn": "Inscrever Agora",
+        "col1Title": "Empresa",
+        "col2Title": "Links Rápidos",
+        "copyright": "Desenvolvido com amor para"
+    },
     "phone": "",
-    "address": "",
-    "name": ""
-  },
-  "legal": {
-    "terms_last_updated": "",
-    "privacy_last_updated": ""
-  },
-  "phone": "",
-  "address": ""
+    "address": ""
 }

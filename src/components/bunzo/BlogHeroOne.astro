@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import { readData } from '../../lib/readData';
+import HeroCategories from './HeroCategories.astro';
+import PostOne from './PostOne.astro';
+
+const siteConfig = readData('siteConfig.json');
+const homeConfig = readData('home.json');
+const heroConfig = homeConfig.hero || {};
+
+const allPosts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const heroPosts = allPosts.slice(0, heroConfig.postLimit || 2);
+const categoriesFromPosts = [...new Set(allPosts.map(p => p.data.category).filter(Boolean))];
+---
+
+<div class="bg-gray-light py-section">
+  <div class="container mx-auto px-4">
+    
+    <!-- Hero Banner (Adicionado para dar o aspecto "Premium" e "Completo") -->
+    {heroConfig.image && (
+      <div class="relative w-full h-[300px] md:h-[450px] rounded-2xl overflow-hidden mb-12 shadow-lg">
+        <img src={heroConfig.image} alt="Hero Banner" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-center px-8 md:px-16">
+          <div class="max-w-2xl text-white">
+            <h1 class="text-3xl md:text-5xl font-bold font-heading mb-4 leading-tight">
+              {siteConfig?.name || "Cuidado & TEA"}
+            </h1>
+            <p class="text-lg md:text-xl opacity-90 leading-relaxed font-base">
+              {heroConfig.description || "Explorando o cotidiano e as interações no Transtorno do Espectro Autista."}
+            </p>
+          </div>
+        </div>
+      </div>
+    )}
+
+    <div class="grid grid-cols-12 gap-7">
+      <!-- Coluna de Categorias -->
+      <div class="lg:col-span-3 col-span-12">
+        <h3 class="text-xl font-bold mb-6 font-heading text-heading">{heroConfig.title || "Explorar Categorias"}</h3>
+        <HeroCategories categories={categoriesFromPosts} />
+      </div>
+      
+      <!-- Coluna de Posts em Destaque -->
+      <div class="lg:col-span-9 col-span-12 space-y-[30px]">
+        {heroPosts.map(post => (
+          <PostOne post={post} />
+        ))}
+      </div>
+    </div>
+  </div>
+</div>

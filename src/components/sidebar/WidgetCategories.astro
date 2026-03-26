@@ -1,36 +1,30 @@
 ---
-interface Category {
+import WidgetTitle from './WidgetTitle.astro';
+
+interface CategoryCount {
   name: string;
   count: number;
 }
 
 interface Props {
-  categories: Category[];
+  categories: CategoryCount[];
 }
 
 const { categories } = Astro.props;
 ---
 
-<div class="bg-white rounded-2xl border border-gray-200 p-5">
-  <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider mb-4 pb-3 border-b border-gray-100 relative">
-    Categorias
-    <span class="absolute bottom-0 left-0 w-12 h-0.5 bg-primary-500"></span>
-  </h3>
-
-  <ul class="space-y-2">
-    {categories.map((cat) => (
+<div class="sidebar-widget mb-10">
+  <WidgetTitle title="Categorias" />
+  
+  <ul class="category-list space-y-3">
+    {categories.map(cat => (
       <li>
-        <a
-          href={`/categoria/${cat.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
-          class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-50 group transition-colors"
+        <a 
+          href={`/categoria/${cat.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`} 
+          class="flex justify-between items-center py-2 px-4 bg-gray-50 rounded-lg hover:bg-primary hover:text-white transition-all group"
         >
-          <span class="text-slate-700 text-sm group-hover:text-primary-500 transition-colors flex items-center gap-2">
-            <svg class="w-3 h-3 text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-            {cat.name}
-          </span>
-          <span class="text-xs bg-primary-50 text-primary-600 font-bold px-2 py-0.5 rounded-full">
+          <span class="font-bold text-gray-700 group-hover:text-white capitalize transition-colors">{cat.name}</span>
+          <span class="text-xs bg-white text-gray-400 px-2.5 py-1 rounded-md font-bold group-hover:bg-white group-hover:text-primary transition-all">
             {cat.count}
           </span>
         </a>

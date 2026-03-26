@@ -1,0 +1,49 @@
+query getSearchItems($searchText: String!) {
+    posts(where: {search: $searchText}) {
+        edges {
+            node {
+                id
+                slug
+                uri
+                title(format: RENDERED)
+                excerpt(format: RENDERED)
+                content(format: RENDERED)
+                video
+                categories {
+                    edges {
+                        node {
+                            id
+                            name
+                            slug
+                            uri
+                        }
+                    }
+                }
+                tags {
+                    edges {
+                        node {
+                            id
+                            name
+                            slug
+                        }
+                    }
+                }
+                author {
+                    node {
+                        id
+                        name
+                        uri
+                        slug
+                    }
+                }
+                date
+                featuredImage {
+                    node {
+                        id
+                        sourceUrl
+                    }
+                }
+            }
+        }
+    }
+}

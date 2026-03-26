@@ -1,0 +1,22 @@
+---
+interface Props {
+  category: string;
+  thumbnail?: string;
+  imgHeight?: string;
+}
+
+const { category, thumbnail = "/assets/bunzo/images/category/1.jpg", imgHeight = "h-[125px]" } = Astro.props;
+const slug = category.toLowerCase().replace(/[^a-z0-9]/g, '-');
+---
+
+<a 
+  href={`/categoria/${slug}`} 
+  class="relative block after:absolute after:content-[''] after:inset-0 after:bg-black rounded-[10px] overflow-hidden after:opacity-50 hover:after:bg-primary hover:after:opacity-80 after:transition-all group"
+>
+  <div class={imgHeight}>
+    <img src={thumbnail} alt={category} class="w-full h-full object-cover group-hover:scale-110 transition-all duration-500">
+  </div>
+  <div class="w-full text-center absolute top-1/2 z-10 transform -translate-y-1/2 px-2">
+    <h4 class="mb-0 text-white capitalize text-[18px] font-semibold">{category}</h4>
+  </div>
+</a>

@@ -1,10 +1,11 @@
 ---
 title: "5 Formas de Monetizar Seu Blog em 2026"
 description: "Aprenda as principais estratégias para transformar seu blog em uma fonte de renda sustentável, desde afiliados até produtos próprios."
-pubDate: 2026-03-15
+pubDate: "2026-03-15"
 heroImage: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=1200&h=630&fit=crop"
 category: "Monetização"
-author: "author-1"
+author: "Ia 2000"
+draft: true
 ---
 
 Você dedica horas criando conteúdo de qualidade. Chegou a hora de fazer esse trabalho gerar retorno financeiro. Veja as principais formas de monetizar um blog em 2026.

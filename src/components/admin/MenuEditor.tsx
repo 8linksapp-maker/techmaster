@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Navigation, Plus, Trash2, ChevronUp, ChevronDown, Save, Loader2, AlertCircle, LayoutList, ExternalLink } from 'lucide-react';
+import { Navigation, Plus, Trash2, ChevronUp, ChevronDown, Save, Loader2, AlertCircle, LayoutList, ExternalLink, ChevronRight, Layers } from 'lucide-react';
 import { triggerToast } from './CmsToaster';
 import { githubApi } from '../../lib/adminApi';
+
+type SubMenuItem = {
+    label: string;
+    href: string;
+};
 
 type MenuItem = {
     label: string;
     href: string;
-    showCategories?: boolean;
+    categories?: SubMenuItem[];
 };
 
 export default function MenuEditor() {
@@ -32,205 +37,143 @@ export default function MenuEditor() {
 
     async function save() {
         setSaving(true);
+        triggerToast('Sincronizando menu...', 'progress');
         try {
-            await githubApi('write', 'src/data/menu.json', {
+            const res = await githubApi('write', 'src/data/menu.json', {
                 content: JSON.stringify({ items }, null, 4),
                 sha: fileSha,
             });
-            const fresh = await githubApi('read', 'src/data/menu.json');
-            setFileSha(fresh.sha);
-            triggerToast('success', 'Menu atualizado!');
+            setFileSha(res.sha);
+            triggerToast('Menu global atualizado!', 'success');
         } catch (err: any) {
-            triggerToast('error', err.message);
+            triggerToast(err.message, 'error');
         } finally {
             setSaving(false);
         }
     }
 
-    function addItem() {
-        setItems(prev => [...prev, { label: 'Novo Link', href: '/' }]);
-    }
+    const addItem = () => setItems(prev => [...prev, { label: 'Novo Link', href: '/', categories: [] }]);
+    const removeItem = (i: number) => setItems(prev => prev.filter((_, idx) => idx !== i));
 
-    function removeItem(i: number) {
-        setItems(prev => prev.filter((_, idx) => idx !== i));
-    }
-
-    function moveUp(i: number) {
-        if (i === 0) return;
+    const moveItem = (i: number, dir: number) => {
         setItems(prev => {
             const next = [...prev];
-            [next[i - 1], next[i]] = [next[i], next[i - 1]];
+            const j = i + dir;
+            if (j < 0 || j >= next.length) return prev;
+            [next[i], next[j]] = [next[j], next[i]];
             return next;
         });
-    }
+    };
 
-    function moveDown(i: number) {
-        setItems(prev => {
-            if (i === prev.length - 1) return prev;
-            const next = [...prev];
-            [next[i], next[i + 1]] = [next[i + 1], next[i]];
-            return next;
-        });
-    }
-
-    function updateItem(i: number, field: keyof MenuItem, value: any) {
+    const updateItem = (i: number, field: keyof MenuItem, value: any) => {
         setItems(prev => {
             const next = [...prev];
             next[i] = { ...next[i], [field]: value };
             return next;
         });
-    }
+    };
 
-    if (loading) return (
-        <div className="flex items-center justify-center h-64 gap-3 text-slate-500">
-            <Loader2 className="w-5 h-5 animate-spin text-violet-500" />
-            <span className="text-sm">Carregando menu...</span>
-        </div>
-    );
+    const addSubItem = (i: number) => {
+        setItems(prev => {
+            const next = [...prev];
+            const cats = Array.isArray(next[i].categories) ? next[i].categories : [];
+            next[i] = { ...next[i], categories: [...(cats as any), { label: 'Sublink', href: '/' }] };
+            return next;
+        });
+    };
 
-    if (error) return (
-        <div className="flex items-center gap-3 p-4 bg-red-50 rounded-xl border border-red-200 max-w-lg">
-            <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
-            <span className="text-red-700 text-sm">{error}</span>
-        </div>
-    );
+    const updateSubItem = (i: number, subIdx: number, field: keyof SubMenuItem, value: string) => {
+        setItems(prev => {
+            const next = [...prev];
+            const cats = [...(next[i].categories || [])];
+            cats[subIdx] = { ...cats[subIdx], [field]: value };
+            next[i] = { ...next[i], categories: cats };
+            return next;
+        });
+    };
+
+    const removeSubItem = (i: number, subIdx: number) => {
+        setItems(prev => {
+            const next = [...prev];
+            next[i] = { ...next[i], categories: next[i].categories?.filter((_, idx) => idx !== subIdx) };
+            return next;
+        });
+    };
+
+    if (loading) return <div className="p-20 text-center text-slate-400"><Loader2 className="animate-spin mx-auto w-10 h-10 text-violet-500 mb-4" /> Carregando Navegação...</div>;
+
+    const inputClass = "w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-violet-500 outline-none text-xs transition-all";
+    const labelClass = "block text-[9px] font-bold text-slate-400 uppercase mb-1 tracking-wider";
 
     return (
-        <div className="max-w-2xl space-y-6">
-            {/* Header */}
-            <div className="flex items-center justify-between">
+        <div className="max-w-3xl space-y-6 pb-20">
+            <div className="flex items-center justify-between bg-white/80 backdrop-blur-md p-5 rounded-2xl shadow-sm border border-slate-100 sticky top-4 z-40">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center">
-                        <Navigation className="w-5 h-5 text-violet-600" />
+                    <div className="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-violet-200">
+                        <Navigation className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="font-bold text-slate-800 text-lg">Menu de Navegação</h2>
-                        <p className="text-sm text-slate-500">Itens do cabeçalho do site</p>
+                        <h2 className="text-lg font-bold text-slate-800">Menu Principal</h2>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Navegação Global</p>
                     </div>
                 </div>
-                <button
-                    onClick={save}
-                    disabled={saving}
-                    className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white text-sm font-bold rounded-xl hover:bg-violet-500 disabled:opacity-60 transition-all shadow-sm"
-                >
+                <button onClick={save} disabled={saving} className="bg-violet-600 text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-violet-700 active:scale-95 transition-all disabled:opacity-50 shadow-sm">
                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                    {saving ? 'Salvando...' : 'Salvar'}
+                    {saving ? 'Publicando...' : 'Publicar'}
                 </button>
             </div>
 
-            {/* Info */}
-            <div className="bg-violet-50 border border-violet-100 rounded-xl p-4 text-sm text-violet-700">
-                <p className="font-semibold mb-1">Dicas</p>
-                <ul className="space-y-0.5 text-violet-600 text-xs">
-                    <li>• Itens com <strong>Mostrar categorias</strong> exibem uma lista suspensa com todas as categorias do blog</li>
-                    <li>• Para páginas do seu próprio site, escreva só o caminho (ex: <strong>/sobre</strong>). Para sites externos, cole o link completo</li>
-                    <li>• A ordem que aparece aqui é a ordem exibida no menu do site</li>
-                </ul>
-            </div>
-
-            {/* Lista de itens */}
-            <div className="space-y-3">
-                {items.length === 0 && (
-                    <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300">
-                        <LayoutList className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                        <p className="text-slate-500 text-sm">Nenhum item no menu</p>
-                        <p className="text-slate-400 text-xs mt-1">Clique em "Adicionar item" para começar</p>
-                    </div>
-                )}
-
+            <div className="space-y-4">
                 {items.map((item, i) => (
-                    <div key={i} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
-                        <div className="flex items-start gap-3">
-                            {/* Reorder buttons */}
-                            <div className="flex flex-col gap-0.5 pt-0.5 shrink-0">
-                                <button
-                                    onClick={() => moveUp(i)}
-                                    disabled={i === 0}
-                                    className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                                >
-                                    <ChevronUp className="w-4 h-4" />
-                                </button>
-                                <button
-                                    onClick={() => moveDown(i)}
-                                    disabled={i === items.length - 1}
-                                    className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                                >
-                                    <ChevronDown className="w-4 h-4" />
-                                </button>
+                    <div key={i} className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden group">
+                        <div className="flex items-center gap-3 p-4 bg-slate-50/50 border-b border-slate-100">
+                            <div className="flex flex-col gap-1 items-center justify-center">
+                                <button onClick={() => moveItem(i, -1)} disabled={i === 0} className="text-slate-300 hover:text-violet-500 disabled:opacity-0 transition-colors"><ChevronUp className="w-4 h-4" /></button>
+                                <button onClick={() => moveItem(i, 1)} disabled={i === items.length - 1} className="text-slate-300 hover:text-violet-500 disabled:opacity-0 transition-colors"><ChevronDown className="w-4 h-4" /></button>
                             </div>
-
-                            {/* Fields */}
-                            <div className="flex-1 grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-2 gap-4 flex-1">
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">
-                                        Texto do link
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={item.label}
-                                        onChange={e => updateItem(i, 'label', e.target.value)}
-                                        placeholder="Ex: Blog"
-                                        className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 transition-all"
-                                    />
+                                    <label className={labelClass}>Nome</label>
+                                    <input type="text" value={item.label} onChange={e => updateItem(i, 'label', e.target.value)} className={inputClass} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">
-                                        URL / caminho
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={item.href}
-                                        onChange={e => updateItem(i, 'href', e.target.value)}
-                                        placeholder="Ex: /blog"
-                                        className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 transition-all"
-                                    />
+                                    <label className={labelClass}>URL</label>
+                                    <input type="text" value={item.href} onChange={e => updateItem(i, 'href', e.target.value)} className={inputClass} />
                                 </div>
                             </div>
-
-                            {/* Delete */}
-                            <button
-                                onClick={() => removeItem(i)}
-                                className="mt-5 w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all shrink-0"
-                                title="Remover item"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                            </button>
+                            <button onClick={() => removeItem(i)} className="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all"><Trash2 className="w-4 h-4" /></button>
                         </div>
 
-                        {/* Toggle showCategories */}
-                        <div className="mt-3 ml-10 flex items-center gap-2">
-                            <button
-                                type="button"
-                                onClick={() => updateItem(i, 'showCategories', !item.showCategories)}
-                                className={`relative w-9 h-5 rounded-full transition-colors duration-200 focus:outline-none ${
-                                    item.showCategories ? 'bg-violet-600' : 'bg-slate-200'
-                                }`}
-                            >
-                                <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${
-                                    item.showCategories ? 'translate-x-4' : 'translate-x-0'
-                                }`} />
+                        {/* Submenus */}
+                        <div className="p-4 space-y-3 pl-12 relative">
+                            <div className="absolute left-6 top-0 bottom-0 w-px bg-slate-100"></div>
+                            {item.categories?.map((sub, sIdx) => (
+                                <div key={sIdx} className="flex items-center gap-2 relative">
+                                    <div className="absolute -left-6 top-1/2 w-4 h-px bg-slate-100"></div>
+                                    <ChevronRight className="w-3 h-3 text-slate-300" />
+                                    <input type="text" value={sub.label} onChange={e => updateSubItem(i, sIdx, 'label', e.target.value)} className={`${inputClass} !bg-white`} placeholder="Sublink" />
+                                    <input type="text" value={sub.href} onChange={e => updateSubItem(i, sIdx, 'href', e.target.value)} className={`${inputClass} !bg-white`} placeholder="/url-sub" />
+                                    <button onClick={() => removeSubItem(i, sIdx)} className="p-1.5 text-slate-300 hover:text-rose-500 transition-colors"><Plus className="w-3 h-3 rotate-45" /></button>
+                                </div>
+                            ))}
+                            <button onClick={() => addSubItem(i)} className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 hover:text-violet-500 uppercase tracking-tighter pl-5 mt-2">
+                                <Layers className="w-3 h-3" /> Adicionar Submenu
                             </button>
-                            <span className="text-xs text-slate-500">
-                                Mostrar dropdown de categorias
-                            </span>
                         </div>
                     </div>
                 ))}
+
+                <button onClick={addItem} className="w-full py-4 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center gap-2 text-slate-400 font-bold hover:border-violet-300 hover:text-violet-500 transition-all active:scale-[0.99]">
+                    <Plus className="w-5 h-5" /> Adicionar Link Principal
+                </button>
             </div>
 
-            {/* Add button */}
-            <button
-                onClick={addItem}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-slate-200 rounded-2xl text-sm font-medium text-slate-500 hover:text-violet-600 hover:border-violet-300 hover:bg-violet-50 transition-all"
-            >
-                <Plus className="w-4 h-4" />
-                Adicionar item
-            </button>
-
-            {/* Preview link */}
-            <div className="flex items-center gap-2 text-xs text-slate-400">
-                <ExternalLink className="w-3 h-3" />
-                <span>As mudanças aparecem no site após salvar e recarregar a página.</span>
+            <div className="bg-amber-50 border border-amber-100 p-4 rounded-xl flex gap-3 items-start">
+                <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
+                <div className="text-xs text-amber-700 leading-relaxed">
+                    <p className="font-bold mb-1">Nota importante:</p>
+                    Links com submenus aparecerão com uma seta no topo do site. Certifique-se de usar URLs válidas como <code className="bg-amber-100 px-1 rounded">/sobre</code> ou <code className="bg-amber-100 px-1 rounded">https://google.com</code>.
+                </div>
             </div>
         </div>
     );

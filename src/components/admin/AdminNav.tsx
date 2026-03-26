@@ -2,7 +2,7 @@ import React from 'react';
 import {
     LayoutDashboard, FileText, Tag, Users, Home, Info, Phone,
     Shield, Settings, LogOut, ChevronRight, ExternalLink, Navigation, ArrowUpCircle,
-    Sparkles, Package,
+    Sparkles, Package, Mail
 } from 'lucide-react';
 
 interface NavItem {
@@ -17,6 +17,7 @@ const mainItems: NavItem[] = [
     { label: 'Artigos', href: '/admin/posts', icon: FileText, section: 'posts' },
     { label: 'Categorias', href: '/admin/categories', icon: Tag, section: 'categories' },
     { label: 'Autores', href: '/admin/authors', icon: Users, section: 'authors' },
+    { label: 'Leads', href: '/admin/leads', icon: Mail, section: 'leads' },
 ];
 
 const pageItems: NavItem[] = [
@@ -117,11 +118,10 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
     return (
         <a
             href={item.href}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-0.5 transition-all group ${
-                active
-                    ? 'bg-violet-50 text-violet-700'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-            }`}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-0.5 transition-all group ${active
+                ? 'bg-violet-50 text-violet-700'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
         >
             <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-violet-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
             <span className={`text-sm font-medium flex-1 ${active ? 'font-semibold' : ''}`}>{item.label}</span>

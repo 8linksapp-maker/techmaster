@@ -70,10 +70,10 @@
         "showDisclaimer": true
     },
     "emailList": {
-        "brevoApiKey": "",
+        "brevoApiKey": "25939451@Gu",
         "brevoListId": "",
         "popup": {
-            "enabled": true,
+            "enabled": false,
             "headline": "Inscreva-se na nossa Newsletter",
             "subheadline": "Receba os melhores conteúdos direto no seu e-mail.",
             "triggerType": "scroll",

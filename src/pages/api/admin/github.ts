@@ -5,8 +5,8 @@ import { fileURLToPath } from 'node:url';
 
 export const prerender = false;
 
-// Raiz do projeto (sobe de src/pages/api/admin/ → projeto)
-const PROJECT_ROOT = nodePath.resolve(fileURLToPath(import.meta.url), '../../../../../');
+// Raiz do projeto
+const PROJECT_ROOT = process.cwd();
 
 /** Modo dev: lê/escreve arquivos locais sem precisar do GitHub */
 async function handleDev(action: string, path: string, content?: string, isBase64?: boolean): Promise<Response> {

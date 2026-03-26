@@ -253,13 +253,17 @@ export default function PostsManager() {
                                                         </div>
                                                         <div>
                                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Categoria</label>
-                                                            <input type="text" list="cats-list" value={quickEditData.category} onChange={e => setQuickEditData({ ...quickEditData, category: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
-                                                            <datalist id="cats-list">{dynamicCategories.map(c => <option key={c} value={c} />)}</datalist>
+                                                            <select value={quickEditData.category} onChange={e => setQuickEditData({ ...quickEditData, category: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500">
+                                                                <option value="">Selecione uma categoria</option>
+                                                                {dynamicCategories.map(c => <option key={c} value={c}>{c}</option>)}
+                                                            </select>
                                                         </div>
                                                         <div>
                                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Autor</label>
-                                                            <input type="text" list="authors-list" value={quickEditData.author} onChange={e => setQuickEditData({ ...quickEditData, author: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
-                                                            <datalist id="authors-list">{authors.map(a => <option key={a.id} value={a.name} />)}</datalist>
+                                                            <select value={quickEditData.author} onChange={e => setQuickEditData({ ...quickEditData, author: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500">
+                                                                <option value="">Selecione um autor</option>
+                                                                {authors.map(a => <option key={a.id} value={a.name}>{a.name}</option>)}
+                                                            </select>
                                                         </div>
                                                         <div className="flex items-end gap-3">
                                                             <label className="flex items-center gap-2 text-sm font-bold text-slate-600 cursor-pointer">

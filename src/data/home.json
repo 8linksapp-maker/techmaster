@@ -1,12 +1,38 @@
 {
-    "sectionTitles": {
-        "latestPosts": "Posts Recentes",
-        "popularTab": "Popular",
-        "recentTab": "Recente"
+    "hero": {
+        "title": "Explorar Categorias",
+        "description": "Como os vídeos curtos publicados em mídias sociais representam o cotidiano e as interações de crianças com TEA e sua relação com a enfermagem.",
+        "image": "/uploads/1774554327978-heroImg.jpg",
+        "slugs": [
+            "asdasdasdasd",
+            "monetize-seu-blog"
+        ],
+        "postLimit": null
     },
-    "latestPosts": {
-        "limit": 6,
-        "btnText": "Ver Todos os Posts",
-        "btnLink": "/blog"
-    }
+    "trending": {
+        "title": "Tendências",
+        "slugs": [
+            "monetize-seu-blog"
+        ],
+        "postLimit": 6
+    },
+    "newsletter": {
+        "title": "Fique por dentro das novidades!",
+        "description": "Inscreva-se em nossa newsletter e receba todas as novidades em primeira mão",
+        "buttonText": "inscreva-se",
+        "bgImage": "/uploads/1774551391623-newsletterImg.jpg"
+    },
+    "recentPosts": {
+        "title": "Artigos Recentes",
+        "searchPlaceholder": "Buscar..",
+        "postLimit": 9
+    },
+    "partners": [
+        "",
+        "",
+        "",
+        "",
+        ""
+    ],
+    "showPartners": false
 }

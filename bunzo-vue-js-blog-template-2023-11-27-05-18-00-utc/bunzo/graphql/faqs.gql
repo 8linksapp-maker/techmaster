@@ -1,0 +1,10 @@
+query getFaqs($limit: Int) {
+    faqs(first: $limit) {
+        edges {
+            node {
+                title
+                content
+            }
+        }
+    }
+}

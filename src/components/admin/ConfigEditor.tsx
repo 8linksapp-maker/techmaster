@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, AlertCircle, Loader2, Image as ImageIcon } from 'lucide-react';
+import { Save, AlertCircle, Loader2, Image as ImageIcon, Upload, Globe, Share2, Mail, Palette, Type, CheckCircle2 } from 'lucide-react';
 import { triggerToast } from './CmsToaster';
 import { githubApi } from '../../lib/adminApi';
 
@@ -8,225 +8,227 @@ export default function ConfigEditor() {
     const [fileSha, setFileSha] = useState('');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState('');
     const [pendingLogo, setPendingLogo] = useState<File | null>(null);
 
     const fileToBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve((reader.result?.toString() || '').split(',')[1]);
+        reader.onload = () => resolve((reader.result as string).split(',')[1]);
         reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
     });
 
     useEffect(() => {
-        githubApi('read', 'src/data/siteConfig.json')
-            .then(data => { setConfig(JSON.parse(data.content)); setFileSha(data.sha); })
-            .catch(err => setError(err.message))
-            .finally(() => setLoading(false));
+        async function load() {
+            try {
+                const data = await githubApi('read', 'src/data/siteConfig.json');
+                setConfig(JSON.parse(data.content));
+                setFileSha(data.sha);
+            } catch (err) {
+                console.error('Erro ao carregar siteConfig', err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        load();
     }, []);
 
-    const handleSave = async (e: React.FormEvent) => {
+    const save = async (e: React.FormEvent) => {
         e.preventDefault();
-        setSaving(true); setError('');
-        triggerToast('Sincronizando configurações...', 'progress', 20);
+        setSaving(true);
         try {
             let configCopy = { ...config };
             if (pendingLogo) {
-                triggerToast('Enviando novo logo...', 'progress', 30);
-                const base64Content = await fileToBase64(pendingLogo);
-                const fileExt = pendingLogo.name.split('.').pop() || 'png';
-                const ghPath = `public/uploads/${Date.now()}-logo.${fileExt}`;
-                await githubApi('write', ghPath, { content: base64Content, isBase64: true, message: 'CMS: Upload Logo' });
-                configCopy.logo = ghPath.replace('public', '');
+                const base64 = await fileToBase64(pendingLogo);
+                const ext = pendingLogo.name.split('.').pop() || 'png';
+                const filename = `logo-${Date.now()}.${ext}`;
+                const path = `public/uploads/${filename}`;
+                await githubApi('write', path, { content: base64, isBase64: true });
+                configCopy.logo = `/uploads/${filename}`;
             }
-            const res = await githubApi('write', 'src/data/siteConfig.json', { content: JSON.stringify(configCopy, null, 2), sha: fileSha, message: 'CMS: Update siteConfig.json' });
-            setFileSha(res.sha); setPendingLogo(null);
-            triggerToast('Configurações salvas com sucesso!', 'success', 100);
+
+            const res = await githubApi('write', 'src/data/siteConfig.json', {
+                content: JSON.stringify(configCopy, null, 4),
+                sha: fileSha
+            });
+
+            setFileSha(res.sha);
+            setConfig(configCopy);
+            setPendingLogo(null);
+            triggerToast('Configurações Globais atualizadas!', 'success');
         } catch (err: any) {
-            setError(err.message); triggerToast(`Erro: ${err.message}`, 'error');
-        } finally { setSaving(false); }
+            triggerToast(`Erro: ${err.message}`, 'error');
+        } finally {
+            setSaving(false);
+        }
     };
 
-    if (loading) return (
-        <div className="flex flex-col items-center justify-center p-20 text-slate-400 bg-white rounded-3xl border border-slate-200">
-            <Loader2 className="w-8 h-8 animate-spin mb-4 text-violet-500" />
-            <p className="font-medium animate-pulse">Conectando ao Repositório...</p>
-        </div>
-    );
+    if (loading) return <div className="p-20 text-center"><Loader2 className="animate-spin mx-auto w-10 h-10 text-violet-500" /></div>;
 
-    if (error && !config) return (
-        <div className="bg-red-50 text-red-700 p-8 rounded-3xl border border-red-200 flex gap-4 items-start">
-            <AlertCircle className="w-8 h-8 shrink-0" />
-            <div><h3 className="text-xl font-bold mb-2">Erro de Leitura</h3><p>{error}</p></div>
-        </div>
-    );
-
-    const inputClass = "w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm text-slate-800 font-medium";
-    const labelClass = "block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1";
-
-    const presetThemes = [
-        { name: 'Rosa Original', primary: '#FE4F70', accent: '#FFA387', dark: '#203656' },
-        { name: 'Oceano',        primary: '#2196F3', accent: '#64B5F6', dark: '#0D2137' },
-        { name: 'Floresta',      primary: '#4CAF50', accent: '#81C784', dark: '#1B3A2A' },
-        { name: 'Sunset',        primary: '#FF5722', accent: '#FFAB91', dark: '#4A1A0A' },
-        { name: 'Roxo Elegante', primary: '#7C3AED', accent: '#A78BFA', dark: '#2D1060' },
-        { name: 'Dourado',       primary: '#D4A017', accent: '#F0D060', dark: '#3D2A00' },
-    ];
+    const inputClass = "w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none text-sm";
+    const labelClass = "block text-xs font-bold text-slate-500 uppercase mb-2";
 
     return (
-        <form onSubmit={handleSave} className="space-y-8 pb-32 max-w-3xl">
-            {/* Action Bar */}
-            <div className="flex items-center justify-between bg-white p-4 px-6 rounded-2xl border border-slate-200 shadow-sm">
+        <form onSubmit={save} className="max-w-4xl space-y-8 pb-32">
+            <div className="flex items-center justify-between bg-white p-6 rounded-2xl shadow-sm border border-slate-100 sticky top-4 z-40">
                 <div>
-                    <h2 className="text-lg font-bold text-slate-800">Configurações Gerais</h2>
-                    <p className="text-xs text-slate-500 mt-0.5">Edita o arquivo <code className="bg-slate-100 px-1 rounded">src/data/siteConfig.json</code></p>
+                    <h2 className="text-xl font-bold text-slate-800">Configurações do Site</h2>
+                    <p className="text-sm text-slate-500">Logo, Redes Sociais e Rodapé</p>
                 </div>
-                <button type="submit" disabled={saving} className="bg-violet-600 hover:bg-violet-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg font-bold flex items-center gap-2 shadow-sm shadow-violet-600/20 transition-all">
-                    {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                    {saving ? 'Salvando...' : 'Salvar Alterações'}
+                <button type="submit" disabled={saving} className="bg-violet-600 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-violet-700 shadow-md">
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    {saving ? 'Salvando...' : 'Salvar Tudo'}
                 </button>
             </div>
 
-            {error && <div className="p-5 bg-red-100/50 text-red-700 rounded-2xl font-bold border border-red-200 flex gap-3"><AlertCircle className="w-5 h-5 shrink-0" /> {error}</div>}
-
-            {/* Identidade */}
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Identidade Base</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="md:col-span-2 flex flex-col sm:flex-row gap-8 items-start">
-                        <div className="w-full sm:w-1/3">
-                            <label className={labelClass}>Logo Principal</label>
-                            <label className="group relative border-2 border-dashed border-slate-300 hover:border-violet-500 bg-slate-50 hover:bg-violet-50/50 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all text-center h-48">
-                                <input type="file" accept="image/*" className="hidden" onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) { setPendingLogo(file); setConfig({ ...config, logo: URL.createObjectURL(file) }); }
-                                }} />
-                                {config?.logo ? (
-                                    <img src={config.logo} alt="Logo" className="max-h-24 w-auto object-contain mb-4 group-hover:scale-105 transition-transform" />
-                                ) : (
-                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-slate-300 shadow-sm mb-3 group-hover:text-violet-500 transition-colors">
-                                        <ImageIcon className="w-8 h-8" />
-                                    </div>
-                                )}
-                                <span className="text-sm font-semibold text-slate-700 group-hover:text-violet-700 transition-colors">
-                                    {config?.logo ? 'Trocar Logo' : 'Enviar Logo (PNG/SVG)'}
-                                </span>
+            <div className="grid md:grid-cols-2 gap-8">
+                {/* IDENTIDADE */}
+                <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
+                    <h3 className="font-bold flex items-center gap-2 text-violet-600 border-b pb-4"><Globe className="w-5 h-5" /> Identidade</h3>
+                    <div>
+                        <label className={labelClass}>Nome do Blog</label>
+                        <input type="text" value={config.name} onChange={e => setConfig({ ...config, name: e.target.value })} className={inputClass} />
+                    </div>
+                    <div>
+                        <label className={labelClass}>Logo (Upload)</label>
+                        <div className="flex items-center gap-4">
+                            {config.logo && <div className="bg-slate-50 p-2 border rounded-xl overflow-hidden self-start"><img src={config.logo} className="h-10 w-auto object-contain" /></div>}
+                            <label className="flex-1 flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 text-[10px] font-bold justify-center transition-all">
+                                <Upload className="w-4 h-4" /> Trocar Logo
+                                <input type="file" className="hidden" onChange={e => setPendingLogo(e.target.files?.[0] || null)} />
                             </label>
                         </div>
-                        <div className="w-full sm:w-2/3 space-y-6">
-                            <div>
-                                <label className={labelClass}>Nome do Site / Empresa</label>
-                                <input type="text" value={config?.name || ''} onChange={e => setConfig({ ...config, name: e.target.value })} className={inputClass} />
+                        {pendingLogo && <p className="mt-2 text-[10px] text-violet-600 font-bold italic flex items-center gap-1"><Save className="w-3 h-3" /> Nova logo selecionada: {pendingLogo.name}</p>}
+
+                        <div className="mt-6 flex gap-3 p-4 bg-violet-50 rounded-2xl border border-violet-100 italic">
+                            <AlertCircle className="w-4 h-4 text-violet-500 shrink-0 mt-0.5" />
+                            <div className="text-[10px] text-violet-700 leading-relaxed font-medium">
+                                <p className="font-bold mb-1 uppercase tracking-wider">Dicas para a Logo:</p>
+                                <ul className="space-y-1">
+                                    <li>• Use <strong>PNG Transparente</strong> ou <strong>SVG</strong> para evitar bordas brancas.</li>
+                                    <li>• Formato <strong>Horizontal</strong> (aprox. 200x50px) funciona melhor.</li>
+                                    <li>• Prefira cores escuras para contraste com o Header claro.</li>
+                                </ul>
                             </div>
-                            {/* Preset Themes */}
+                        </div>
+                    </div>
+                </div>
+
+                {/* REDES SOCIAIS */}
+                <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+                    <h3 className="font-bold flex items-center gap-2 text-blue-500 border-b pb-4"><Share2 className="w-5 h-5" /> Redes Sociais</h3>
+                    {['instagram', 'facebook', 'twitter', 'linkedin'].map(s => (
+                        <div key={s}>
+                            <label className={labelClass}>{s}</label>
+                            <input type="text" value={config.social?.[s] || ''} onChange={e => setConfig({ ...config, social: { ...config.social, [s]: e.target.value } })} className={inputClass} placeholder="https://..." />
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-8">
+                <h3 className="font-bold flex items-center gap-2 text-fuchsia-600 border-b pb-4"><Palette className="w-5 h-5" /> Customização Visual</h3>
+
+                <div className="grid md:grid-cols-2 gap-10">
+                    {/* CORES */}
+                    <div className="space-y-6">
+                        <label className={labelClass}>Paleta de Cores</label>
+                        <div className="grid grid-cols-2 gap-3 mb-6">
+                            {[
+                                { name: 'Bunzo Original', p: '#8e61b9', s: '#ffb16e' },
+                                { name: 'Vasco/Clean', p: '#000000', s: '#ff0000' },
+                                { name: 'Ocean Tech', p: '#0f172a', s: '#38bdf8' },
+                                { name: 'Forest Mint', p: '#064e3b', s: '#10b981' },
+                                { name: 'Midnight Berry', p: '#4c1d95', s: '#f472b6' },
+                                { name: 'Sunset Bloom', p: '#ea580c', s: '#facc15' }
+                            ].map(palette => (
+                                <button
+                                    key={palette.name}
+                                    type="button"
+                                    onClick={() => setConfig({ ...config, theme: { ...config.theme, primary: palette.p, accent: palette.s } })}
+                                    className={`flex items-center gap-2 p-2 rounded-xl border transition-all text-[10px] font-bold ${config.theme?.primary === palette.p && config.theme?.accent === palette.s ? 'border-violet-500 bg-violet-50' : 'border-slate-100 hover:border-slate-300'}`}
+                                >
+                                    <div className="flex -space-x-1">
+                                        <div className="w-4 h-4 rounded-full border border-white" style={{ background: palette.p }}></div>
+                                        <div className="w-4 h-4 rounded-full border border-white" style={{ background: palette.s }}></div>
+                                    </div>
+                                    {palette.name}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-6">
                             <div>
-                                <label className={labelClass}>Temas Prontos</label>
-                                <div className="flex flex-wrap gap-2">
-                                    {presetThemes.map(preset => (
-                                        <button
-                                            key={preset.name}
-                                            type="button"
-                                            onClick={() => setConfig({ ...config, theme: { ...config.theme, primary: preset.primary, accent: preset.accent, dark: preset.dark } })}
-                                            className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl hover:border-violet-400 hover:bg-violet-50 transition-all text-sm font-semibold text-slate-700"
-                                        >
-                                            <span className="w-4 h-4 rounded-full border border-white shadow-sm" style={{ background: preset.primary }} />
-                                            <span className="w-4 h-4 rounded-full border border-white shadow-sm" style={{ background: preset.accent }} />
-                                            {preset.name}
-                                        </button>
-                                    ))}
+                                <label className="text-[10px] font-bold text-slate-400 uppercase mb-2 block">Cor Primária</label>
+                                <div className="flex items-center gap-3">
+                                    <input type="color" value={config.theme?.primary || '#8e61b9'} onChange={e => setConfig({ ...config, theme: { ...config.theme, primary: e.target.value } })} className="w-10 h-10 rounded-lg cursor-pointer border-none p-0" />
+                                    <input type="text" value={config.theme?.primary || ''} onChange={e => setConfig({ ...config, theme: { ...config.theme, primary: e.target.value } })} className="flex-1 bg-slate-50 border border-slate-100 rounded-lg px-2 py-1 text-xs font-mono" />
                                 </div>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                {[
-                                    { key: 'primary', label: 'Cor Primária' },
-                                    { key: 'accent', label: 'Cor de Destaque' },
-                                ].map(f => (
-                                    <div key={f.key}>
-                                        <label className={labelClass}>{f.label}</label>
-                                        <div className="flex gap-4 p-2 bg-slate-50 border border-slate-200 rounded-xl">
-                                            <input type="color" value={config?.theme?.[f.key] || '#000000'} onChange={e => setConfig({ ...config, theme: { ...config.theme, [f.key]: e.target.value } })} className="h-10 w-16 p-0 border-0 rounded-lg cursor-pointer bg-transparent" />
-                                            <input type="text" value={config?.theme?.[f.key] || ''} onChange={e => setConfig({ ...config, theme: { ...config.theme, [f.key]: e.target.value } })} className="flex-1 bg-transparent border-none focus:outline-none font-mono text-slate-700 font-bold" />
+                            <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase mb-2 block">Cor Secundária</label>
+                                <div className="flex items-center gap-3">
+                                    <input type="color" value={config.theme?.accent || '#ffb16e'} onChange={e => setConfig({ ...config, theme: { ...config.theme, accent: e.target.value } })} className="w-10 h-10 rounded-lg cursor-pointer border-none p-0" />
+                                    <input type="text" value={config.theme?.accent || ''} onChange={e => setConfig({ ...config, theme: { ...config.theme, accent: e.target.value } })} className="flex-1 bg-slate-50 border border-slate-100 rounded-lg px-2 py-1 text-xs font-mono" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* FONTES */}
+                    <div className="space-y-6">
+                        <label className={labelClass}><Type className="w-4 h-4 inline mr-1" /> Combinações de Fontes</label>
+                        <div className="space-y-3">
+                            {[
+                                { id: 'poppins', name: 'Standard (Poppins + Roboto)', desc: 'Equilibrada e moderna' },
+                                { id: 'inter', name: 'Minimalist (Inter)', desc: 'Limpa e profissional' },
+                                { id: 'lexend', name: 'Friendly (Lexend + Inter)', desc: 'Leitura fácil e convidativa' },
+                                { id: 'playfair', name: 'Editorial (Playfair + Source)', desc: 'Elegante e sofisticada' },
+                                { id: 'outfit', name: 'Dynamic (Outfit + Open Sans)', desc: 'Moderna e vibrante' }
+                            ].map(fontPair => (
+                                <button
+                                    key={fontPair.id}
+                                    type="button"
+                                    onClick={() => setConfig({ ...config, theme: { ...config.theme, font: fontPair.id } })}
+                                    className={`w-full text-left p-4 rounded-2xl border transition-all relative ${config.theme?.font === fontPair.id ? 'border-violet-500 bg-violet-50/50 ring-1 ring-violet-500' : 'border-slate-100 hover:border-slate-200'}`}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="font-bold text-sm text-slate-800">{fontPair.name}</p>
+                                            <p className="text-[10px] text-slate-400">{fontPair.desc}</p>
                                         </div>
+                                        {config.theme?.font === fontPair.id && <CheckCircle2 className="w-5 h-5 text-violet-500" />}
                                     </div>
-                                ))}
-                            </div>
-                            {/* Live Preview */}
-                            {(config?.theme?.primary || config?.theme?.accent) && (
-                                <div>
-                                    <label className={labelClass}>Preview</label>
-                                    <div
-                                        className="h-14 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-sm"
-                                        style={{ background: `linear-gradient(to right, ${config?.theme?.primary || '#FE4F70'} 0%, ${config?.theme?.accent || '#FFA387'} 100%)` }}
-                                    >
-                                        Botões · Destaques · Categorias
-                                    </div>
-                                </div>
-                            )}
-                            <div>
-                                <label className={labelClass}>Combinação de Fontes</label>
-                                <select value={config?.theme?.font || 'outfit'} onChange={e => setConfig({ ...config, theme: { ...config.theme, font: e.target.value } })} className={inputClass}>
-                                    <option value="inter">Inter & Roboto Mono (Moderno / Tech)</option>
-                                    <option value="outfit">Outfit & Inter (Clean / SaaS)</option>
-                                    <option value="roboto">Roboto & Open Sans (Corporativo / Neutro)</option>
-                                    <option value="poppins">Poppins & Lora (Criativo / Boutique)</option>
-                                    <option value="montserrat">Montserrat & Merriweather (Profissional / Textual)</option>
-                                    <option value="playfair">Playfair Display & Source Sans (Elegante / Editorial)</option>
-                                    <option value="lora">Lora & Merriweather (Revista / Narrativa)</option>
-                                </select>
-                            </div>
+                                </button>
+                            ))}
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Informações de Contato */}
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Informações de Contato</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* URL do site — nível raiz do siteConfig */}
+            {/* RODAPÉ */}
+            <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
+                <h3 className="font-bold flex items-center gap-2 text-emerald-600 border-b pb-4 mb-6"><Mail className="w-5 h-5" /> Configuração do Rodapé (Footer)</h3>
+                <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                        <label className={labelClass}>URL do Site</label>
-                        <input type="text" placeholder="https://seusite.com.br" value={config?.url || ''} onChange={e => setConfig({ ...config, url: e.target.value })} className={inputClass} />
+                        <label className={labelClass}>Título Newsletter Rodapé</label>
+                        <input type="text" value={config.footer?.subscribeTitle} onChange={e => setConfig({ ...config, footer: { ...config.footer, subscribeTitle: e.target.value } })} className={inputClass} />
                     </div>
-                    {/* email, phone, address — dentro de contact{} */}
-                    {[
-                        { key: 'email',   label: 'E-mail',              placeholder: 'contato@seusite.com' },
-                        { key: 'phone',   label: 'Telefone / WhatsApp', placeholder: '(11) 99999-9999' },
-                        { key: 'address', label: 'Endereço',            placeholder: 'Rua X, 123 — Cidade/UF' },
-                    ].map(f => (
-                        <div key={f.key}>
-                            <label className={labelClass}>{f.label}</label>
-                            <input
-                                type="text"
-                                placeholder={f.placeholder}
-                                value={config?.contact?.[f.key] || ''}
-                                onChange={e => setConfig({ ...config, contact: { ...config.contact, [f.key]: e.target.value } })}
-                                className={inputClass}
-                            />
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Redes Sociais */}
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">Redes Sociais (Rodapé)</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {['instagram', 'twitter', 'linkedin', 'github', 'youtube', 'facebook'].map(social => (
-                        <div key={social}>
-                            <label className={labelClass}>{social}</label>
-                            <input type="url" placeholder={`https://${social}.com/seuperfil`} value={config?.social?.[social] || ''} onChange={e => setConfig({ ...config, social: { ...config.social, [social]: e.target.value } })} className={`${inputClass} font-mono`} />
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* SEO Global */}
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 border-b border-slate-100 pb-4">SEO Global</h3>
-                <div className="space-y-4">
-                    <div><label className={labelClass}>Título Padrão (SEO)</label><input type="text" value={config?.seo?.title || ''} onChange={e => setConfig({ ...config, seo: { ...config.seo, title: e.target.value } })} className={inputClass} /></div>
-                    <div><label className={labelClass}>Descrição Padrão</label><textarea rows={3} value={config?.seo?.description || ''} onChange={e => setConfig({ ...config, seo: { ...config.seo, description: e.target.value } })} className={`${inputClass} resize-y`} /></div>
+                    <div>
+                        <label className={labelClass}>Texto Botão Rodapé</label>
+                        <input type="text" value={config.footer?.subscribeBtn} onChange={e => setConfig({ ...config, footer: { ...config.footer, subscribeBtn: e.target.value } })} className={inputClass} />
+                    </div>
+                    <div>
+                        <label className={labelClass}>Título Coluna 1</label>
+                        <input type="text" value={config.footer?.col1Title} onChange={e => setConfig({ ...config, footer: { ...config.footer, col1Title: e.target.value } })} className={inputClass} />
+                    </div>
+                    <div>
+                        <label className={labelClass}>Título Coluna 2</label>
+                        <input type="text" value={config.footer?.col2Title} onChange={e => setConfig({ ...config, footer: { ...config.footer, col2Title: e.target.value } })} className={inputClass} />
+                    </div>
+                    <div className="md:col-span-2">
+                        <label className={labelClass}>Texto de Copyright</label>
+                        <input type="text" value={config.footer?.copyright} onChange={e => setConfig({ ...config, footer: { ...config.footer, copyright: e.target.value } })} className={inputClass} />
+                    </div>
                 </div>
             </div>
         </form>

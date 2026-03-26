@@ -1,0 +1,21 @@
+{
+    "title": "Sobre Nós",
+    "intro": {
+        "title": "Dedicados ao Cuidado e à Inclusão",
+        "description": "Nossa missão é fornecer informações precisas e empáticas sobre o TEA, apoiando famílias e profissionais de enfermagem em sua jornada diária.",
+        "image": "/uploads/1774552606884-aboutImg.png",
+        "features": [
+            "Conteúdo Científico",
+            "Apoio Comunitário",
+            "Guia de Cuidados"
+        ]
+    },
+    "mission": {
+        "title": "Nossa Missão",
+        "description": "Educar e sensibilizar a sociedade sobre as potencialidades das crianças com TEA, transformando o cuidado de enfermagem através do conhecimento compartilhado."
+    },
+    "vision": {
+        "title": "Nossa Visão",
+        "description": "Ser a principal referência em conteúdo audiovisual e informativo para a rede de apoio ao autismo no Brasil."
+    }
+}

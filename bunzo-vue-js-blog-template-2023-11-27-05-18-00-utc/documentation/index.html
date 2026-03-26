@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bunzo-Vue JS Blog Template</title>
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
+    <link rel="stylesheet" href="assets/jquery.fancybox.min.css" />
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="assets/bootstrap.min.css" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" type="text/css" media="all" />
+</head>
+
+<body>
+    <div class="body-wrapper container-fluid p-0">
+        <!-- nav area -->
+        <div class="nav-wrapper">
+            <div class="logo-wrapper">
+                <div class="logo">
+                    <a href="#">
+                        <img src="images/logo.png" alt="logo">
+                    </a>
+                </div>
+            </div>
+            <div class="navigation" id="nav">
+                <div class="nav-item active">
+                    <a class="nav-list-item"><i class="fa fa-play"></i>Get started</a>
+                    <div class="sub-nav">
+                        <a class="sub-nav-item active" href="#introduction">Introduction</a>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-list-item"><i class="fa fa-upload"></i>Template Installation</a>
+                    <div class="sub-nav">
+                        <a class="sub-nav-item" href="#install-steps">Installation Steps</a>
+                    </div>
+                    <div class="sub-nav">
+                        <a class="sub-nav-item" href="#dependencies">Dependencies</a>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-list-item"><i class="fa fa-folder-o" href="#folder-structure"></i>Folder
+                        Structure</a>
+                    <div class="sub-nav">
+                        <a class="sub-nav-item" href="#filesincluded">Files Included</a>
+                        <a class="sub-nav-item" href="#src-folder-structure">Src Folder Structure</a>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-list-item"><i class="fa fa-code"></i>Project Structure</a>
+                    <div class="sub-nav">
+                        <a class="sub-nav-item" href="#page-structure">Project Structure</a>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-list-item"><i class="fa fa-cog"></i>Customization</a>
+                    <div class="sub-nav">
+                        <a class="sub-nav-item" href="#customize-component">Customize Component</a>
+                        <a class="sub-nav-item" href="#logo-change">Change Logo</a>
+                        <a class="sub-nav-item" href="#content-change">Register Component</a>
+                        <a class="sub-nav-item" href="#map-change">Change Map Location</a>
+                        <a class="sub-nav-item" href="#copyright-change">Change Copyrigt Text</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- content area -->
+        <div class="content-wrapper" id="content">
+            <div class="doc-hero-wrap">
+                <div class="hero-wrap-inner">
+                    <h2 class="title">Bunzo - Vue JS Blog Template</h2>
+                    <h5>Jamstack Blog Solution</h5>
+                </div>
+            </div>
+            <!-- Getting start -->
+            <div class="content-section" id="introduction" style="display: block;">
+                <h3>Introduction</h3>
+                <h5>Template Name: Bunzo - Vue JS Blog Template</h5>
+                Thank you very much for choosing our template. We truly appreciate and
+                really hope that you'll enjoy our template! <br />
+                <strong>If you like this template, Please support us by rating us 5
+                    stars..</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><br /><br />
+                <p>Bunzo is a simple VueJS blog Template. This template has 3 home page layouts and responsive, easy to customize.</p>
+                <p>Bunzo comes with a variation of 10+ pages where there are 3 unique home versions. It is built with Vue, Nuxt, SASS This SEO-friendly template comes with numerous features like Smooth Animations,Image Zoom, Google Fonts, and many more.</p>
+                <p>Now grow your business with this Bunzo - VueJS Blog Template without any hesitation.</p>
+                <h3>Template Features</h3>
+                <ul>
+                    <li>Jamstack Blog (Headless)</li>
+                    <li>Build on VueJS Platform</li>
+                    <li>Build on Nuxt JS Platform</li>
+                    <li>Fully Functional</li>
+                    <li>Use GraphQL</li>
+                    <li>Use Headless WordPress</li>
+                    <li>Tailwind CSS Framework</li>
+                    <li>No jQuery Dependency</li>
+                    <li>SEO Friendly Pages</li>
+                    <li>3 Home Variations</li>
+                    <li>SASS Supported</li>
+                    <li>1000+ Icon Font (Icofont)</li>
+                    <li>Google Font Include</li>
+                    <li>Fully Responsive Design</li>
+                    <li>W3C Validated Code</li>
+                    <li>Clean Code</li>
+                    <li>Speed Optimized</li>
+                    <li>Cross Browser Support</li>
+                    <li>Well Documented</li>
+                    <li>No Console Error</li>
+                    <li>Free Updates</li>
+                </ul>
+                <h5>Need Support?</h5>
+                If you have any questions regarding to theme issues, please submit a
+                ticket at
+                <a href="https://hasthemes.com/contact-us/" target="_blank">https://hasthemes.com/contact-us/</a>
+            </div>
+            <div class="content-section" id="filesincluded">
+                <h3>Files Included</h3>
+                <ul>
+                    <li>Documentation</li>
+                    <li>Template Files - <strong>Bunzo</strong></li>
+                    <li>Plugins - <strong>htbunzo (Custom WP plugins for Bunzo WP dashboard environment setup)</strong></li>
+                </ul>
+                <a class="popup_image" data-fancybox="install-file" href="images/installation/1.jpg">
+                    <img src="images/installation/1.jpg" />
+                </a>
+            </div>
+            <div class="content-section" id="install-steps">
+                <div id="started">
+                    <div class="page-header">
+                        <h3>Getting Started</h3>
+                        <hr class="notop">
+                    </div>
+                    <div class="card mb-5">
+                        <div class="card-header">
+                            <h5>Installation</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><b>Node.js and NPM :</b> You can download Node.js from https://nodejs.org. NPM comes bundled with Node.js.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card mb-5">
+                        <div class="card-header">
+                            <h5>WordPress Installation</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>To get WP GraphQL API, You must have a working version of Wordpress already installed</p>
+
+                            <h6>Recommended Plugins for blog environment setup</h6>
+                            <ul>
+                                <li>WPGraphQL ( <a href="https://wordpress.org/plugins/wp-graphql/" target="_blank">https://wordpress.org/plugins/wp-graphql/</a> )</li>
+                                <li>htbunzo plugins (You will get the plugins to the downloaded folder)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card mb-5">
+                        <div class="card-header">
+                            <h5>Include GraphQL API</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>You must have to include WP GraphQL API.</li>
+                            </ul>
+                            <p>Open your nuxt.config.js file and include your GraphQL API in apollo httpEndpoint</p>
+                            <img src="images/customization/api.jpg" alt="image">
+                        </div>
+                    </div>
+                    <div class="card mb-5">
+                        <div class="card-header">
+                            <h5>Install NPM Packages</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>You must have to <code>yarn install</code> or <code>npm install</code> packages. You can do this by running npm install from the root of your project to install all the necessary dependencies.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card mb-5">
+                        <div class="card-header">
+                            <h5>Development server</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Run <code> yarn dev </code> or <code> npm run dev </code> for a dev server. Navigate to http://localhost:3000/ . The app will automatically reload if you change any of the source files.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card mb-5">
+                        <div class="card-header">
+                            <h5>Build</h5>
+                            <p>With static site generation you can render your application during the build phase and deploy it to any static hosting services such as Netlify, GitHub pages, Vercel etc. <br>This means that no server is needed in order to deploy you application.</p>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Before you build your project, please see <b>nuxt.config.js</b> carefully and customize in the way you want. <br>
+                                Run <code>npm run generate</code> command to build the project. The build artifacts will be stored inside the dist directory.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card mb-5">
+                        <div class="card-header">
+                            <h5>Further help</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>To get more help</p>
+                            <a href="https://go.nuxtjs.dev/static-target">https://go.nuxtjs.dev/static-target</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content-section" id="dependencies">
+                <div id="started">
+                    <div class="page-header">
+                        <h3>Dependencies</h3>
+                        <hr class="notop">
+                    </div>
+                    <div class="card mb-5">
+                        <div class="card-header">
+                            <h5>Modules used in the project</h5>
+                            <p>Modules used in Bunzo Blog VueJS Template are as following.</p>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>"@nuxtjs/apollo": "^4.0.1-rc.5",</li>
+                                <li>"@nuxtjs/style-resources": "^1.0.0",</li>
+                                <li>"eslint-config-prettier": "^8.3.0",</li>
+                                <li>"core-js": "^3.13.1",</li>
+                                <li>"graphql-tag": "^2.12.6",</li>
+                                <li>"nuxt": "^2.15.8",</li>
+                                <li>"swiper": "^5.3.7",</li>
+                                <li>"vue-awesome-swiper": "^4.1.1",</li>
+                                <li>"vue-disqus": "^4.0.1",</li>
+                                <li>"vue-cool-lightbox": "^2.7.4",</li>
+                                <li>"vue-template-compiler": "^2.6.14"</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <h3>FTP Upload</h3>
+                <ul>
+                    <li>Open up your FTP manager and connect to your hosting</li>
+                    <li>Browse to required directory (Normally public_html)</li>
+                    <li>Upload the all files inside <strong>dist</strong> folder</li>
+                </ul>
+                <a class="popup_image" data-fancybox="install-file" href="images/folder-structure/2.png" id="src-folder-structure">
+                    <img src="images/folder-structure/2.png" />
+                </a>
+                <br />
+                <br />
+            </div>
+            <div class="content-section" id="page-structure">
+                <h3>Project Structure</h3>
+                <h6>Well-organized and easily understandable structure</h6>
+                <p>Bunzo VueJS Blog Template has well-oragnized and easily understandable folder structure according to the nuxt folder structure rule.</p>
+                <pre>                 Bunzo/// root folder
+                    +
+                    |bunzo
+                    |  |——static/
+                    |  |  |——/images
+                    |  |  |——/favicon.ico
+                    |  |——assets/
+                    |  |  |——css/                          --css files
+                    |  |  |——fonts/                        --fonts files
+                    |  |  |——scss/                         --scss files
+                    |  |——components                       --Component Files Folder
+                    |  |  |——/Loader.vue
+                    |  |  |——/ReadingTime.vue
+                    |  |  |——about
+                    |  |  |  |——/AboutHistory.vue
+                    |  |  |  |——/AboutMissionVision.vue
+                    |  |  |  |——/ImageWithVideo.vue
+                    |  |  |  |——/TeamMember.vue
+                    |  |  |  |——/TeamWrapper.vue
+                    |  |  |——hero
+                    |  |  |  |——/BlogHeroOne.vue
+                    |  |  |  |——/BlogHeroTwo.vue
+                    |  |  |  |——/BlogHeroThree.vue
+                    |  |  |——author
+                    |  |  |  |——/AuthorProfile.vue
+                    |  |  |——categories
+                    |  |  |  |——/CategoryStyleOne.vue
+                    |  |  |  |——/HeroCategories.vue
+                    |  |  |  |——/PopularCategories.vue
+                    |  |  |  |——/TrendingCategoryCarousel.vue
+                    |  |  |——contact
+                    |  |  |  |——/ContactForm.vue
+                    |  |  |  |——/GoogleMap.vue
+                    |  |  |  |——/OfficeLocationWrapper.vue
+                    |  |  |——elements
+                    |  |  |  |——/Breadcrumb.vue
+                    |  |  |  |——/Button.vue
+                    |  |  |  |——/Comment.vue
+                    |  |  |  |——/Newsletter.vue
+                    |  |  |  |——/NewsletterTwo.vue
+                    |  |  |  |——/SocialIcon.vue
+                    |  |  |  |——/TrustedPartnerCarousel.vue
+                    |  |  |——faq
+                    |  |  |  |——/FaqAccordion.vue
+                    |  |  |  |——/FaqSectionTitle.vue
+                    |  |  |——header
+                    |  |  |  |——/Header.vue
+                    |  |  |  |——/HeaderTwo.vue
+                    |  |  |  |——/HeaderThree.vue
+                    |  |  |  |——/HeaderTopBar.vue
+                    |  |  |  |——/Navigation.vue
+                    |  |  |  |——/OffCanvasMobileMenu.vue
+                    |  |  |  |——/OffcanvasSearchBox.vue
+                    |  |  |  |——/ResponsiveMobileMenu.vue
+                    |  |  |——posts
+                    |  |  |  |——/AuthorPostWrapper.vue
+                    |  |  |  |——/HeroPostsBackup.vue
+                    |  |  |  |——/PopularPostCarousel.vue
+                    |  |  |  |——/PostDetails.vue
+                    |  |  |  |——/PostOne.vue
+                    |  |  |  |——/PostStyleTwo.vue
+                    |  |  |  |——/RecentPostWrapper.vue
+                    |  |  |  |——/RecentPostWrapperTwo.vue
+                    |  |  |  |——/RecentPostWrapperTwoWithSearch.vue
+                    |  |  |  |——/TrendingPostCarousel.vue
+                    |  |  |  |——/TrendingPostsSectionOne.vue
+                    |  |  |  |——/VideoPostWrapper.vue
+                    |  |  |——utilities
+                    |  |  |  |——/LoadingBar.vue
+                    |  |  |——footer
+                    |  |  |  |——/Footer.vue
+                    |  |  |  |——/FooterBottom.vue
+                    |  |  |  |——/FooterStyleTwo.vue
+                    |  |  |  |——/WidgetCategory.vue
+                    |  |  |  |——/WidgetLinks.vue
+                    |  |  |  |——/WidgetQuickLinks.vue
+                    |  |  |  |——/WidgetSubscribe.vue
+                    |  |  |  |——/WidgetText.vue
+                    |  |——pages                       
+                    |  |  |——/index.vue
+                    |  |  |——/home-two.vue
+                    |  |  |——/home-three.vue
+                    |  |  |——/privacy-policy.vue
+                    |  |  |——/terms-conditions.vue
+                    |  |  |——blog
+                    |  |  |  |——/index.vue
+                    |  |  |  |——/_slug.vue
+                    |  |  |——about
+                    |  |  |  |——/index.vue
+                    |  |  |——contact
+                    |  |  |  |——/index.vue
+                    |  |  |——author
+                    |  |  |  |——/_slug.vue
+                    |  |  |——categories
+                    |  |  |  |——/_slug.vue
+                    |  |  |  |——/index.vue
+                    |  |  |——faq
+                    |  |  |  |——/index.vue
+                    |  |  |——search
+                    |  |  |  |——/_search.vue
+                    |  |——layouts
+                    |  |  |——/default.vue
+                    |  |  |——/layoutForTransparentHeader.vue
+                    |  |  |——/layoutStyleThree.vue
+                    |  |  |——/error.vue
+                    |  |——mixins
+                    |  |  |——/formatDate.js
+                    |  |  |——/readingTime.js
+                    |  |  |——/truncateString.js
+                    |  |——graphql
+                    |  |  |——/author.js
+                    |  |  |——/authors.js
+                    |  |  |——/categories.js
+                    |  |  |——/categoryPosts.js
+                    |  |  |——/footerCategory.js
+                    |  |  |——/menu.js
+                    |  |  |——/postQuery.js
+                    |  |  |——/postsQuery.js
+                    |  |  |——/trendingPosts.js
+                    |  |  |——/videoPosts.js
+                    |  |  |——/faqs.gql
+                    |  |  |——/search.gql
+                    |  |——plugins
+                    |  |  |——/vue-awesome-swiper.js
+                    |  |——/nuxt.config.js                  
+                    |  |——/package.json
+                    |  |——/README.md
+                </pre>
+                <span><b>Help</b>: Farther details can be found here official documentation <a href="https://vuejs.org/v2/guide/">https://nuxtjs.org/</a></span>
+            </div>
+            <div class="content-section" id="customize-component">
+                <h3>Customize Component</h3>
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6>Customize The Other Components</h6>
+                    </div>
+                    <div class="card-body">
+                        <p>Customizing all the other components are so easy to use once you mastered above components. It is the same case as customizing post style.<br> Therefore you can just insert any props that helps you change your component.</p>
+                        <p>Here is an example:</p>
+                          <p><code>&lt;PostStyleTwo :blog="blog" /&gt;</code></p>
+                          <code>components: {
+                            PostStyleTwo: () => import('@/components/posts/PostStyleTwo')
+                          }</code>
+                        <a class="popup_image" data-fancybox="install-file" href="images/customization/blog.png"><img src="images/customization/blog.jpg" /></a>
+                    </div>
+                </div>
+                <br />
+            </div>
+            <div class="content-section" id="logo-change">
+                <h3>How to change Logo?</h3>
+                <br />
+                <a class="popup_image" data-fancybox="install-file" href="images/customization/logo.png"><img src="images/customization/logo.jpg" /></a>
+                <br />
+                <br />
+            </div>
+            <div class="content-section" id="content-change">
+                <h3>How to register component on page component?</h3>
+                <br />
+                <a class="popup_image" data-fancybox="install-file" href="images/customization/component-reg.png"><img src="images/customization/component-reg.jpg" /></a>
+                <br />
+                <br />
+            </div>
+            <div class="content-section" id="map-change">
+                <h3>How to Change Map Location?</h3>
+                <br />
+                <a class="popup_image" data-fancybox="install-file" href="images/customization/map.png"><img src="images/customization/map.jpg" /></a>
+                <br />
+                <br />
+            </div>
+            <div class="content-section" id="copyright-change">
+                <h3>How to Change Copyright?</h3>
+                <p>
+                    You can change copyright text from here.
+                </p>
+                <br />
+                <br />
+                <a class="popup_image" data-fancybox="install-file" href="images/customization/copyright.png"><img src="images/customization/copyright.jpg" /></a>
+                <br />
+                <br />
+            </div>
+        </div>
+    </div>
+    <!-- body-wrapper -->
+    <script type="text/javascript" src="assets/jquery.js"></script>
+    <script type="text/javascript" src="assets/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/jquery.fancybox.min.js"></script>
+    <script type="text/javascript" src="assets/script.js"></script>
+</body>
+
+</html>
