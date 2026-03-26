@@ -3,7 +3,10 @@
         "title": "Os Melhores Eletrônicos de 2026",
         "description": "Reviews profundos e comparativos dos melhores gadgets, smartphones, smart TVs e muito mais para você comprar com inteligência.",
         "image": "/assets/bunzo/images/hero/hero-three.jpg",
-        "slugs": [],
+        "slugs": [
+            "melhores-smart-tvs-2026",
+            "melhores-fones-bluetooth-2026"
+        ],
         "postLimit": 4
     },
     "trending": {
