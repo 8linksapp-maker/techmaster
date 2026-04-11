@@ -186,20 +186,34 @@ export default function HomeEditor() {
             {/* HERO */}
             <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1.5 h-full bg-violet-600"></div>
-                <h3 className="text-lg font-bold mb-8 flex items-center gap-2 text-slate-800"><Home className="w-5 h-5 text-violet-600" /> Banner Hero</h3>
+                <h3 className="text-lg font-bold mb-2 flex items-center gap-2 text-slate-800"><Home className="w-5 h-5 text-violet-600" /> Banner Hero</h3>
+                <p className="text-xs text-slate-500 mb-6">
+                    Se houver posts publicados, o banner mostra um <strong>carrossel automático</strong> com os posts mais recentes (ou os da curadoria).
+                    O <strong>título e descrição</strong> abaixo só aparecem quando <strong>não há posts publicados</strong> ainda.
+                </p>
                 <div className="grid md:grid-cols-2 gap-8">
                     <div className="space-y-6">
                         <div>
-                            <label className={labelClass}>Título SEO</label>
-                            <input type="text" value={config.hero.title} onChange={e => updateField('hero.title', e.target.value)} className={inputClass} />
+                            <label className={labelClass}>Título do Banner (sem posts)</label>
+                            <input type="text" placeholder="Bem-vindo ao meu blog" value={config.hero.title} onChange={e => updateField('hero.title', e.target.value)} className={inputClass} />
                         </div>
                         <div>
-                            <label className={labelClass}>Descrição Oculta</label>
-                            <textarea rows={3} value={config.hero.description} onChange={e => updateField('hero.description', e.target.value)} className={inputClass} />
+                            <label className={labelClass}>Subtítulo do Banner (sem posts)</label>
+                            <textarea rows={3} placeholder="Descrição curta do que seu site oferece" value={config.hero.description} onChange={e => updateField('hero.description', e.target.value)} className={inputClass} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className={labelClass}>Texto Botão CTA</label>
+                                <input type="text" placeholder="Ex: Ver Artigos" value={config.hero.ctaText || ''} onChange={e => updateField('hero.ctaText', e.target.value)} className={inputClass} />
+                            </div>
+                            <div>
+                                <label className={labelClass}>Link do Botão</label>
+                                <input type="text" placeholder="/blog ou https://..." value={config.hero.ctaHref || ''} onChange={e => updateField('hero.ctaHref', e.target.value)} className={inputClass} />
+                            </div>
                         </div>
                     </div>
                     <div className="space-y-4">
-                        <label className={labelClass}>Fundo do Hero</label>
+                        <label className={labelClass}>Imagem de Fundo do Banner</label>
                         <div className="relative aspect-video rounded-2xl border border-slate-200 overflow-hidden bg-slate-50 group">
                             <img src={config.hero.image} className="w-full h-full object-cover" />
                             <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
@@ -207,10 +221,12 @@ export default function HomeEditor() {
                                 <input type="file" className="hidden" onChange={e => handleFileSelect(e, 'heroImg')} />
                             </label>
                         </div>
+                        <p className="text-xs text-slate-400">Aparece sempre — atrás do carrossel ou do título.</p>
                     </div>
                     {/* Hero Slugs */}
                     <div className="md:col-span-2 space-y-4 pt-4 border-t border-slate-50">
                         <label className={labelClass}>Curadoria: Escolher Posts Manuais (Hero)</label>
+                        <p className="text-xs text-slate-400 -mt-3">Se deixar vazio, o banner mostra automaticamente os posts mais recentes.</p>
                         <div className="space-y-2">
                             {config.hero.slugs.map((slug, i) => (
                                 <div key={i} className="flex gap-2">
