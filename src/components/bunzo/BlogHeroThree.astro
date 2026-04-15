@@ -31,7 +31,8 @@ const heroCtaHref = heroData.ctaHref || '';
 const hasPosts = heroPosts.length > 0;
 ---
 
-<div class="relative flex items-center z-10 min-h-[600px] md:min-h-[820px] bg-cover bg-center bg-no-repeat" style={`background-image: url('${heroBg}');`}>
+<div class="hero-bg-wrap relative flex items-center z-10 min-h-[600px] md:min-h-[820px]">
+    <img src={heroBg} alt="" width="1920" height="820" fetchpriority="high" decoding="async" class="absolute inset-0 w-full h-full object-cover z-[-1]">
     {hasPosts ? (
         <div class="swiper-container hero-three-slider w-full">
             <div class="swiper-wrapper">
@@ -41,13 +42,13 @@ const hasPosts = heroPosts.length > 0;
                             <div class="grid grid-cols-12 items-center">
                                 <div class="col-span-12 lg:col-span-6 order-last lg:order-first">
                                     <div class="content text-white xl:pr-20 mt-10 lg:mt-0">
-                                        <h5 class="text-white mb-6 hover:text-accent transition-colors">
-                                            <span class="text-white/70">Por</span>
+                                        <p class="text-white mb-6 hover:text-accent transition-colors font-medium">
+                                            <span class="text-white/80">Por</span>
                                             {(() => {
                                                 const a = authors.find((au: any) => au.id === post.data.author) || { name: post.data.author };
                                                 return <span>{a.name}</span>;
                                             })()}
-                                        </h5>
+                                        </p>
                                         <h2 class="text-white text-3xl md:text-4xl lg:text-[45px] font-bold font-heading hover:text-accent transition-colors leading-tight">
                                             <a href={`/blog/${post.slug}`}>
                                                 {post.data.title}
@@ -69,7 +70,7 @@ const hasPosts = heroPosts.length > 0;
                                 <div class="col-span-12 lg:col-span-6 order-first lg:order-last">
                                     <div class="rounded-[10px] overflow-hidden border-2 border-primary lg:h-[400px] p-2.5 sm:p-5 bg-white/5 backdrop-blur-sm">
                                         <a href={`/blog/${post.slug}`}>
-                                            <img src={post.data.heroImage || post.data.image} alt={post.data.title} class="w-full h-full object-cover rounded-xl shadow-2xl transition-transform duration-500 hover:scale-105">
+                                            <img src={post.data.heroImage || post.data.image} alt={post.data.title} width="742" height="400" loading="lazy" decoding="async" class="w-full h-full object-cover rounded-xl shadow-2xl transition-transform duration-500 hover:scale-105">
                                         </a>
                                     </div>
                                 </div>
@@ -135,22 +136,30 @@ const hasPosts = heroPosts.length > 0;
     import 'swiper/css/pagination';
     import 'swiper/css/effect-fade';
 
-    new Swiper('.hero-three-slider', {
-        modules: [Pagination, EffectFade, Autoplay],
-        speed: 800,
-        slidesPerView: 1,
-        spaceBetween: 10,
-        effect: "fade",
-        fadeEffect: {
-            crossFade: true
-        },
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-        },
-        autoplay: {
-            delay: 5000,
-            disableOnInteraction: false,
-        },
-    });
+    function initHeroSwiper() {
+        new Swiper('.hero-three-slider', {
+            modules: [Pagination, EffectFade, Autoplay],
+            speed: 800,
+            slidesPerView: 1,
+            spaceBetween: 10,
+            effect: "fade",
+            fadeEffect: {
+                crossFade: true
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initHeroSwiper);
+    } else {
+        initHeroSwiper();
+    }
 </script>

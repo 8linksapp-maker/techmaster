@@ -93,12 +93,15 @@ const selectedFontUrl = selectedFont.url;
   <!-- Preload hero image (LCP) -->
   <link rel="preload" as="image" href="/assets/bunzo/images/hero/hero-three.webp" type="image/webp" fetchpriority="high">
 
+  <!-- Preload IcoFont (critical path) -->
+  <link rel="preload" as="font" type="font/woff2" href="/assets/bunzo/fonts/icofont.woff2" crossorigin>
+
   <!-- Google Fonts (preconnect + async load) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href={`https://fonts.googleapis.com/css2?${selectedFontUrl}&display=swap`}>
   <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?${selectedFontUrl}&display=swap`} media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href={`https://fonts.googleapis.com/css2?${selectedFontUrl}&display=swap`}></noscript>
-
 
   <!-- Head plugins: GA, Meta Pixel, AdSense -->
   <HeadPlugins />

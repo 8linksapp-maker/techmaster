@@ -46,23 +46,31 @@ const trendingTitle = homeData.trending?.title || "Em Destaque";
     import 'swiper/css';
     import 'swiper/css/navigation';
 
-    new Swiper('.trending-slider', {
-        modules: [Navigation, Autoplay],
-        speed: 750,
-        loop: false,
-        spaceBetween: 30,
-        navigation: {
-            nextEl: '.swiper-button-next-trending',
-            prevEl: '.swiper-button-prev-trending',
-        },
-        autoplay: {
-            delay: 4000,
-            disableOnInteraction: false,
-        },
-        breakpoints: {
-            992: { slidesPerView: 3 },
-            768: { slidesPerView: 2 },
-            320: { slidesPerView: 1 }
-        }
-    });
+    function initTrendingSwiper() {
+        new Swiper('.trending-slider', {
+            modules: [Navigation, Autoplay],
+            speed: 750,
+            loop: false,
+            spaceBetween: 30,
+            navigation: {
+                nextEl: '.swiper-button-next-trending',
+                prevEl: '.swiper-button-prev-trending',
+            },
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: false,
+            },
+            breakpoints: {
+                992: { slidesPerView: 3 },
+                768: { slidesPerView: 2 },
+                320: { slidesPerView: 1 }
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTrendingSwiper);
+    } else {
+        initTrendingSwiper();
+    }
 </script>

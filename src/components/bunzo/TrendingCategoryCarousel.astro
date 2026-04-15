@@ -50,19 +50,27 @@ const categoriesFromPosts = [...new Set(allPosts.map(p => p.data.category).filte
   import 'swiper/css';
   import 'swiper/css/navigation';
 
-  new Swiper('.category-swiper', {
-    modules: [Navigation],
-    speed: 750,
-    slidesPerView: 1,
-    spaceBetween: 20,
-    navigation: {
-      nextEl: '.trending-button-next',
-      prevEl: '.trending-button-prev',
-    },
-    breakpoints: {
-      480: { slidesPerView: 2 },
-      768: { slidesPerView: 3 },
-      1024: { slidesPerView: 4 }
-    }
-  });
+  function initCategorySwiper() {
+    new Swiper('.category-swiper', {
+      modules: [Navigation],
+      speed: 750,
+      slidesPerView: 1,
+      spaceBetween: 20,
+      navigation: {
+        nextEl: '.trending-button-next',
+        prevEl: '.trending-button-prev',
+      },
+      breakpoints: {
+        480: { slidesPerView: 2 },
+        768: { slidesPerView: 3 },
+        1024: { slidesPerView: 4 }
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCategorySwiper);
+  } else {
+    initCategorySwiper();
+  }
 </script>
