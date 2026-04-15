@@ -2,7 +2,7 @@
     "hero": {
         "title": "Os Melhores Eletrônicos de 2026",
         "description": "Reviews profundos e comparativos dos melhores gadgets, smartphones, smart TVs e muito mais para você comprar com inteligência.",
-        "image": "/assets/bunzo/images/hero/hero-three.jpg",
+        "image": "/assets/bunzo/images/hero/hero-three.webp",
         "slugs": [
             "melhores-smart-tvs-2026",
             "melhores-fones-bluetooth-2026"
@@ -18,7 +18,7 @@
         "title": "Quer economizar em 2026?",
         "description": "Inscreva-se para receber alertas de preços e reviews exclusivos dos lançamentos mais aguardados.",
         "buttonText": "inscreva-se",
-        "bgImage": "/assets/bunzo/images/banners/newsletter-two.jpg"
+        "bgImage": "/assets/bunzo/images/banners/newsletter-two.webp"
     },
     "recentPosts": {
         "title": "Posts recentes",

@@ -51,6 +51,9 @@
     .swiper-button-next::after {
         @apply hidden;
     }
+    .swiper-slide {
+        will-change: transform;
+    }
 }
 
 @layer components {

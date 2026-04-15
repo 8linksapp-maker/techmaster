@@ -18,7 +18,7 @@ const categories = readData('categories.json', []);
                         <form id="footerForm" class="body space-y-4">
                             <input type="text" id="footerName" name="name" placeholder="Seu Nome" required class="bg-transparent border-2 border-white/10 py-4 px-3 text-white rounded-lg font-medium w-full focus:outline-none focus:border-accent">
                             <input type="email" id="footerEmail" name="email" placeholder="Seu e-mail" required class="bg-transparent border-2 border-white/10 py-4 px-3 text-white rounded-lg font-medium w-full focus:outline-none focus:border-accent">
-                            <button type="submit" class="mt-5 text-white px-8 py-3 rounded-md font-bold hover:bg-white hover:text-primary transition-all inline-block shadow-lg" style={`background-color: var(--color-accent);`}>
+                            <button type="submit" class="mt-5 px-8 py-3 rounded-md font-bold hover:bg-white hover:text-primary transition-all inline-block shadow-lg" style={`background-color: var(--color-accent); color: var(--color-heading);`}>
                                 {siteConfig.footer?.subscribeBtn || "Inscrever Agora"}
                             </button>
                         </form>

@@ -34,7 +34,7 @@ const hasPosts = heroPosts.length > 0;
 <div class="hero-bg-wrap relative flex items-center z-10 min-h-[600px] md:min-h-[820px]">
     <img src={heroBg} alt="" width="1920" height="820" fetchpriority="high" decoding="async" class="absolute inset-0 w-full h-full object-cover z-[-1]">
     {hasPosts ? (
-        <div class="swiper-container hero-three-slider w-full">
+        <div class="swiper hero-three-slider w-full">
             <div class="swiper-wrapper">
                 {heroPosts.map((post: any) => (
                     <div class="swiper-slide">
