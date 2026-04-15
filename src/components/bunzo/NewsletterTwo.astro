@@ -3,7 +3,7 @@ import { readData } from '../../lib/readData';
 
 const homeData = readData('home.json');
 const { 
-    bgImage = homeData.newsletter?.bgImage || "/assets/bunzo/images/banners/newsletter-two.jpg", 
+    bgImage = homeData.newsletter?.bgImage || "/assets/bunzo/images/banners/newsletter-two.webp", 
     btnVariant = "bg-accent",
     title = homeData.newsletter?.title || "Subscribe For Newsletter",
     description = homeData.newsletter?.description || "Receive the latest news directly in your inbox.",

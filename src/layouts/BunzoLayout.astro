@@ -90,10 +90,14 @@ const selectedFontUrl = selectedFont.url;
   {socialImage && <meta property="og:image" content={socialImage} />}
   <meta property="og:url" content={Astro.url} />
 
-  <!-- Google Fonts -->
+  <!-- Preload hero image (LCP) -->
+  <link rel="preload" as="image" href="/assets/bunzo/images/hero/hero-three.webp" type="image/webp" fetchpriority="high">
+
+  <!-- Google Fonts (preconnect + async load) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?${selectedFontUrl}&display=swap`}>
+  <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?${selectedFontUrl}&display=swap`} media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href={`https://fonts.googleapis.com/css2?${selectedFontUrl}&display=swap`}></noscript>
 
 
   <!-- Head plugins: GA, Meta Pixel, AdSense -->

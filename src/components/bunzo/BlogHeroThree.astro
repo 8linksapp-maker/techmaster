@@ -22,7 +22,8 @@ function formatDate(date: Date) {
     });
 }
 const heroData = homeData.hero || {};
-const heroBg = heroData.image || "/assets/bunzo/images/hero/hero-three.jpg";
+const heroBgRaw = heroData.image || "/assets/bunzo/images/hero/hero-three.webp";
+const heroBg = heroBgRaw.replace(/\.jpg$/, '.webp').replace(/\.png$/, '.webp');
 const heroTitle = heroData.title || '';
 const heroDescription = heroData.description || '';
 const heroCtaText = heroData.ctaText || '';

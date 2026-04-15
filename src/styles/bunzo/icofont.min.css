@@ -5,7 +5,7 @@
 * @copyright Copyright (c) 2015 - 2018 IcoFont 
 * @license - https://icofont.com/license/
 */
-@font-face {
+@font-face{font-display:swap;
     font-family: IcoFont;
     font-weight: 400;
     font-style: Regular;
