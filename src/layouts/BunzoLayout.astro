@@ -5,11 +5,23 @@ import Footer from '../components/bunzo/Footer.astro';
 import HeadPlugins from '../plugins/_slots/HeadPlugins.astro';
 import BodyEndPlugins from '../plugins/_slots/BodyEndPlugins.astro';
 
+import { getCollection } from 'astro:content';
+
 // Import CSS
 import '../styles/bunzo/icofont.min.css';
 import '../styles/bunzo/tailwind.css';
 
 const siteConfig = readData('siteConfig.json');
+
+// Resolve LCP image (first hero post cover) for preload
+const homeData = readData('home.json');
+const heroSlugs = homeData.hero?.slugs || [];
+let lcpImage = homeData.hero?.image || '/assets/bunzo/images/hero/hero-three.webp';
+if (heroSlugs.length > 0) {
+  const allPosts = (await getCollection('blog')).filter(p => !p.data.draft);
+  const firstPost = allPosts.find(p => p.slug === heroSlugs[0]);
+  if (firstPost?.data?.heroImage) lcpImage = firstPost.data.heroImage;
+}
 const pluginsConfig = readData('pluginsConfig.json', {});
 const gscVerificationTag = (pluginsConfig as any)?.searchConsole?.verificationTag?.trim() || '';
 
@@ -89,8 +101,8 @@ const selectedFontUrl = selectedFont.url;
   {socialImage && <meta property="og:image" content={socialImage} />}
   <meta property="og:url" content={Astro.url} />
 
-  <!-- Preload hero image (LCP) -->
-  <link rel="preload" as="image" href="/assets/bunzo/images/hero/hero-three.webp" type="image/webp" fetchpriority="high">
+  <!-- Preload LCP image (first hero post cover) -->
+  <link rel="preload" as="image" href={lcpImage} fetchpriority="high">
 
   <!-- Preload IcoFont (critical path) -->
   <link rel="preload" as="font" type="font/woff2" href="/assets/bunzo/fonts/icofont.woff2" crossorigin>

@@ -32,11 +32,11 @@ const hasPosts = heroPosts.length > 0;
 ---
 
 <div class="hero-bg-wrap relative flex items-center z-10 min-h-[600px] md:min-h-[820px]">
-    <img src={heroBg} alt="" width="1920" height="820" fetchpriority="high" decoding="async" class="absolute inset-0 w-full h-full object-cover z-[-1]">
+    <img src={heroBg} alt="" width="1920" height="820" decoding="async" class="absolute inset-0 w-full h-full object-cover z-[-1]">
     {hasPosts ? (
         <div class="swiper hero-three-slider w-full">
             <div class="swiper-wrapper">
-                {heroPosts.map((post: any) => (
+                {heroPosts.map((post: any, idx: number) => (
                     <div class="swiper-slide">
                         <div class="container mx-auto px-4">
                             <div class="grid grid-cols-12 items-center">
@@ -70,7 +70,11 @@ const hasPosts = heroPosts.length > 0;
                                 <div class="col-span-12 lg:col-span-6 order-first lg:order-last">
                                     <div class="rounded-[10px] overflow-hidden border-2 border-primary lg:h-[400px] p-2.5 sm:p-5 bg-white/5 backdrop-blur-sm">
                                         <a href={`/blog/${post.slug}`}>
-                                            <img src={post.data.heroImage || post.data.image} alt={post.data.title} width="742" height="400" loading="lazy" decoding="async" class="w-full h-full object-cover rounded-xl shadow-2xl transition-transform duration-500 hover:scale-105">
+                                            {idx === 0 ? (
+                                                <img src={post.data.heroImage || post.data.image} alt={post.data.title} width="742" height="400" fetchpriority="high" decoding="async" class="w-full h-full object-cover rounded-xl shadow-2xl transition-transform duration-500 hover:scale-105">
+                                            ) : (
+                                                <img src={post.data.heroImage || post.data.image} alt={post.data.title} width="742" height="400" loading="lazy" decoding="async" class="w-full h-full object-cover rounded-xl shadow-2xl transition-transform duration-500 hover:scale-105">
+                                            )}
                                         </a>
                                     </div>
                                 </div>
