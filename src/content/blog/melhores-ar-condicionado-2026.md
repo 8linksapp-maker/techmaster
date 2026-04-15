@@ -2,7 +2,7 @@
 title: "Melhores Ar-Condicionado Inverter 2026: Frio e Economia"
 description: "Com as ondas de calor de 2026, ter um ar-condicionado eficiente é vital. Listamos os modelos que gastam menos energia."
 pubDate: "2026-03-25"
-heroImage: "/uploads/1774558566373-blog-cover.jpeg"
+heroImage: "/uploads/1774558566373-blog-cover.webp"
 category: "eletrodomesticos"
 author: "Redator"
 draft: false

@@ -2,7 +2,7 @@
 title: "Melhores Fones Bluetooth 2026: O Fim do Ruído Externo"
 description: "Comparamos o novo Bose QuietComfort e o Sony XM7. Qual o melhor fone com cancelamento de ruído em 2026?"
 pubDate: "2026-03-23"
-heroImage: "/uploads/1774558681729-blog-cover.png"
+heroImage: "/uploads/1774558681729-blog-cover.webp"
 category: "audio"
 author: "Redator"
 draft: false

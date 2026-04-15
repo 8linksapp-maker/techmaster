@@ -2,7 +2,7 @@
 title: "Review Completo: Smartphone Pro Max 2026 – O Rei da Fotografia?"
 description: "Testamos o novo topo de linha de 2026. Com sensor de 1 polegada e zoom óptico de 20x, ele promete aposentar as câmeras profissionais."
 pubDate: "2026-03-21"
-heroImage: "/uploads/1774558770103-blog-cover.jpg"
+heroImage: "/uploads/1774558770103-blog-cover.webp"
 category: "smartphones"
 author: "Redator"
 draft: false

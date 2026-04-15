@@ -47,12 +47,53 @@
     .content ul li {
         @apply mb-2.5;
     }
+    /* Swiper critical CSS (inlined to avoid render-blocking swiper.css) */
+    .swiper {
+        overflow: hidden;
+        position: relative;
+        list-style: none;
+        padding: 0;
+        z-index: 1;
+    }
+    .swiper-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        display: flex;
+        transition-property: transform;
+        box-sizing: content-box;
+        transform: translate3d(0, 0, 0);
+    }
+    .swiper-slide {
+        flex-shrink: 0;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        will-change: transform;
+    }
+    .swiper-backface-hidden .swiper-slide {
+        backface-visibility: hidden;
+    }
+    .swiper-pagination {
+        position: absolute;
+        text-align: center;
+        z-index: 10;
+    }
+    .swiper-pagination-bullet {
+        display: inline-block;
+        cursor: pointer;
+    }
+    .swiper-fade .swiper-slide {
+        pointer-events: none;
+        transition-property: opacity;
+    }
+    .swiper-fade .swiper-slide-active {
+        pointer-events: auto;
+    }
     .swiper-button-prev::after,
     .swiper-button-next::after {
         @apply hidden;
-    }
-    .swiper-slide {
-        will-change: transform;
     }
 }
 

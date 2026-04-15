@@ -2,7 +2,7 @@
 title: "O Melhor Smartwatch de 2026: Saúde em Primeiro Lugar"
 description: "A monitoração de glicose não invasiva chegou! Veja quais smartwatches de 2026 já contam com esta tecnologia revolucionária."
 pubDate: "2026-03-24"
-heroImage: "/uploads/1774558636167-blog-cover.jpg"
+heroImage: "/uploads/1774558636167-blog-cover.webp"
 category: "wearables"
 author: "Redator"
 draft: false
