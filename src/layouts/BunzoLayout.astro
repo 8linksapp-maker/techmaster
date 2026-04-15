@@ -5,23 +5,16 @@ import Footer from '../components/bunzo/Footer.astro';
 import HeadPlugins from '../plugins/_slots/HeadPlugins.astro';
 import BodyEndPlugins from '../plugins/_slots/BodyEndPlugins.astro';
 
-import { getCollection } from 'astro:content';
-
 // Import CSS
 import '../styles/bunzo/icofont.min.css';
 import '../styles/bunzo/tailwind.css';
 
 const siteConfig = readData('siteConfig.json');
 
-// Resolve LCP image (first hero post cover) for preload
+// Resolve LCP image (hero background) for preload
 const homeData = readData('home.json');
-const heroSlugs = homeData.hero?.slugs || [];
-let lcpImage = homeData.hero?.image || '/assets/bunzo/images/hero/hero-three.webp';
-if (heroSlugs.length > 0) {
-  const allPosts = (await getCollection('blog')).filter(p => !p.data.draft);
-  const firstPost = allPosts.find(p => p.slug === heroSlugs[0]);
-  if (firstPost?.data?.heroImage) lcpImage = firstPost.data.heroImage;
-}
+const heroBgRaw = homeData.hero?.image || '/assets/bunzo/images/hero/hero-three.webp';
+const lcpImage = heroBgRaw.replace(/\.jpg$/, '.webp').replace(/\.png$/, '.webp');
 const pluginsConfig = readData('pluginsConfig.json', {});
 const gscVerificationTag = (pluginsConfig as any)?.searchConsole?.verificationTag?.trim() || '';
 
