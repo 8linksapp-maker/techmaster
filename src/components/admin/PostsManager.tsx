@@ -35,14 +35,18 @@ export default function PostsManager() {
                 githubApi('list', 'src/content/blog'),
             ]);
 
-            if (authRes.status === 'fulfilled') {
-                const parsed = JSON.parse(authRes.value.content);
-                if (Array.isArray(parsed)) setAuthors(parsed);
+            if (authRes.status === 'fulfilled' && authRes.value?.content) {
+                try {
+                    const parsed = JSON.parse(authRes.value.content);
+                    if (Array.isArray(parsed)) setAuthors(parsed);
+                } catch {}
             }
 
-            if (catRes.status === 'fulfilled') {
-                const parsedCats = JSON.parse(catRes.value.content);
-                if (Array.isArray(parsedCats)) parsedCats.forEach((c: string) => allCategories.add(c));
+            if (catRes.status === 'fulfilled' && catRes.value?.content) {
+                try {
+                    const parsedCats = JSON.parse(catRes.value.content);
+                    if (Array.isArray(parsedCats)) parsedCats.forEach((c: string) => allCategories.add(c));
+                } catch {}
             }
 
             if (postsRes.status === 'fulfilled') {
@@ -253,17 +257,13 @@ export default function PostsManager() {
                                                         </div>
                                                         <div>
                                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Categoria</label>
-                                                            <select value={quickEditData.category} onChange={e => setQuickEditData({ ...quickEditData, category: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500">
-                                                                <option value="">Selecione uma categoria</option>
-                                                                {dynamicCategories.map(c => <option key={c} value={c}>{c}</option>)}
-                                                            </select>
+                                                            <input type="text" list="cats-list" value={quickEditData.category} onChange={e => setQuickEditData({ ...quickEditData, category: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
+                                                            <datalist id="cats-list">{dynamicCategories.map(c => <option key={c} value={c} />)}</datalist>
                                                         </div>
                                                         <div>
                                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Autor</label>
-                                                            <select value={quickEditData.author} onChange={e => setQuickEditData({ ...quickEditData, author: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500">
-                                                                <option value="">Selecione um autor</option>
-                                                                {authors.map(a => <option key={a.id} value={a.name}>{a.name}</option>)}
-                                                            </select>
+                                                            <input type="text" list="authors-list" value={quickEditData.author} onChange={e => setQuickEditData({ ...quickEditData, author: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
+                                                            <datalist id="authors-list">{authors.map(a => <option key={a.id} value={a.name} />)}</datalist>
                                                         </div>
                                                         <div className="flex items-end gap-3">
                                                             <label className="flex items-center gap-2 text-sm font-bold text-slate-600 cursor-pointer">
