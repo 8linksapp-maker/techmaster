@@ -23,7 +23,7 @@ function formatDate(date: Date) {
 }
 const heroData = homeData.hero || {};
 const heroBgRaw = heroData.image || "/assets/bunzo/images/hero/hero-three.webp";
-const heroBg = heroBgRaw.replace(/\.jpg$/, '.webp').replace(/\.png$/, '.webp');
+const heroBg = heroBgRaw.includes('/uploads/') ? heroBgRaw : heroBgRaw.replace(/\.jpg$/, '.webp').replace(/\.png$/, '.webp');
 const heroTitle = heroData.title || '';
 const heroDescription = heroData.description || '';
 const heroCtaText = heroData.ctaText || '';

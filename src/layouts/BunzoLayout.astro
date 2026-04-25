@@ -14,7 +14,7 @@ const siteConfig = readData('siteConfig.json');
 // Resolve LCP image (hero background) for preload
 const homeData = readData('home.json');
 const heroBgRaw = homeData.hero?.image || '/assets/bunzo/images/hero/hero-three.webp';
-const lcpImage = heroBgRaw.replace(/\.jpg$/, '.webp').replace(/\.png$/, '.webp');
+const lcpImage = heroBgRaw.includes('/uploads/') ? heroBgRaw : heroBgRaw.replace(/\.jpg$/, '.webp').replace(/\.png$/, '.webp');
 const pluginsConfig = readData('pluginsConfig.json', {});
 const gscVerificationTag = (pluginsConfig as any)?.searchConsole?.verificationTag?.trim() || '';
 
