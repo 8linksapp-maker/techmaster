@@ -300,6 +300,39 @@ export default function HomeEditor() {
                 </div>
             </div>
 
+            {/* SECOES VISIVEIS */}
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-violet-500"></div>
+                <h3 className="text-lg font-bold mb-6 flex items-center gap-2 text-slate-800">
+                    <Eye className="w-5 h-5 text-violet-500" /> Secoes da Home
+                </h3>
+                <p className="text-xs text-slate-500 mb-4">Escolha quais secoes ficam visiveis na homepage.</p>
+                <div className="space-y-3">
+                    {[
+                        { key: 'showTrending', label: 'Secao de Tendencias' },
+                        { key: 'showNewsletter', label: 'Newsletter' },
+                        { key: 'showRecentPosts', label: 'Artigos Recentes' },
+                        { key: 'showPartners', label: 'Parceiros', value: config.showPartners },
+                    ].map(s => (
+                        <label key={s.key} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
+                            <input
+                                type="checkbox"
+                                checked={s.key === 'showPartners' ? config.showPartners !== false : (config as any).sections?.[s.key] !== false}
+                                onChange={e => {
+                                    if (s.key === 'showPartners') {
+                                        setConfig(prev => ({ ...prev, showPartners: e.target.checked }));
+                                    } else {
+                                        setConfig(prev => ({ ...prev, sections: { ...(prev as any).sections, [s.key]: e.target.checked } }));
+                                    }
+                                }}
+                                className="w-4 h-4 rounded text-violet-600 focus:ring-violet-500"
+                            />
+                            <span className="text-sm font-medium text-slate-700">{s.label}</span>
+                        </label>
+                    ))}
+                </div>
+            </div>
+
             {/* PARCEIROS */}
             <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
