@@ -1,0 +1,76 @@
+---
+import BunzoLayout from '../layouts/BunzoLayout.astro';
+import Breadcrumb from '../components/bunzo/Breadcrumb.astro';
+import { getCollection } from 'astro:content';
+import { BLOG_BASE } from '../lib/postUrl';
+
+const posts = (await getCollection('blog'))
+    .filter(p => !p.data.draft)
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const items = posts.map(p => ({
+    slug: p.slug,
+    title: p.data.title,
+    description: p.data.description || '',
+    heroImage: p.data.heroImage || '',
+    category: p.data.category || '',
+    pubDate: p.data.pubDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }),
+}));
+---
+
+<BunzoLayout title="Buscar">
+    <Breadcrumb slug="Buscar" />
+
+    <div class="py-section">
+        <div class="container mx-auto px-4">
+            <h1 class="sr-only">Resultados da busca</h1>
+            <form id="search-form" class="flex gap-2 mb-8 max-w-2xl mx-auto">
+                <input id="q-input" type="search" name="q" class="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent" placeholder="Digite sua busca..." />
+                <button type="submit" class="bg-accent hover:bg-primary text-white font-semibold px-6 py-3 rounded-lg transition-colors">Buscar</button>
+            </form>
+            <p id="result-info" class="text-gray-500 text-sm mb-6 text-center"></p>
+            <div id="search-results" class="grid md:grid-cols-2 lg:grid-cols-3 gap-x-[30px] gap-y-[50px]"></div>
+            <div id="empty-state" class="text-center py-16 bg-gray-50 rounded-lg" style="display:none;">
+                <p class="text-gray-600">Nenhum artigo encontrado.</p>
+            </div>
+        </div>
+    </div>
+
+    <script id="search-data" type="application/json" set:html={JSON.stringify(items)} />
+    <script type="module" define:vars={{ blogBase: BLOG_BASE }}>
+        const items = JSON.parse(document.getElementById('search-data').textContent || '[]');
+        const $r = document.getElementById('search-results');
+        const $e = document.getElementById('empty-state');
+        const $i = document.getElementById('result-info');
+        const $q = document.getElementById('q-input');
+        const $f = document.getElementById('search-form');
+        const esc = s => String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+        function search(q) {
+            const nq = norm(q.trim());
+            if (!nq) return [];
+            return items.filter(i => norm(i.title).includes(nq) || norm(i.description).includes(nq) || norm(i.category).includes(nq));
+        }
+        function render(filtered, q) {
+            if (!q.trim()) { $i.textContent = 'Digite um termo para buscar.'; $r.innerHTML = ''; $e.style.display = 'none'; return; }
+            $i.textContent = `${filtered.length} resultado${filtered.length === 1 ? '' : 's'} para "${q}"`;
+            if (!filtered.length) { $r.innerHTML = ''; $e.style.display = 'block'; return; }
+            $e.style.display = 'none';
+            $r.innerHTML = filtered.map(p => `
+                <article class="group">
+                    ${p.heroImage ? `<a href="${blogBase}/${p.slug}" class="block overflow-hidden rounded-lg mb-4"><img src="${esc(p.heroImage)}" alt="${esc(p.title)}" loading="lazy" class="w-full aspect-video object-cover group-hover:scale-105 transition-transform duration-500"/></a>` : ''}
+                    <div>
+                        ${p.category ? `<span class="inline-block text-xs uppercase tracking-wider text-accent font-semibold mb-2">${esc(p.category)}</span>` : ''}
+                        <h3 class="text-xl lg:text-2xl font-bold text-primary hover:text-accent transition-colors mb-2"><a href="${blogBase}/${p.slug}">${esc(p.title)}</a></h3>
+                        <p class="text-gray-600 text-sm mb-2">${esc(p.description)}</p>
+                        <span class="text-xs text-gray-500">${esc(p.pubDate)}</span>
+                    </div>
+                </article>
+            `).join('');
+        }
+        const params = new URLSearchParams(location.search);
+        const q0 = params.get('q') || '';
+        $q.value = q0; render(search(q0), q0);
+        $f.addEventListener('submit', e => { e.preventDefault(); const q = $q.value; const url = new URL(location.href); url.searchParams.set('q', q); history.replaceState(null, '', url); render(search(q), q); });
+    </script>
+</BunzoLayout>

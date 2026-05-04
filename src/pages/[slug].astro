@@ -1,0 +1,33 @@
+---
+import { getCollection } from 'astro:content';
+import BunzoLayout from '../layouts/BunzoLayout.astro';
+import PostDetails from '../components/bunzo/PostDetails.astro';
+import Breadcrumb from '../components/bunzo/Breadcrumb.astro';
+import PostAfterPlugins from '../plugins/_slots/PostAfterPlugins.astro';
+import { readData } from '../lib/readData';
+
+export async function getStaticPaths() {
+    const RESERVED = new Set(['blog', 'sobre', 'contato', 'categoria', 'admin', 'login', 'registrar', 'politica-privacidade', 'termos', 'configuracoes']);
+    const siteConfig = readData('siteConfig.json', {}) as any;
+    if (siteConfig.postUrlPrefix === 'blog') return [];
+    const posts = await getCollection('blog');
+    return posts
+        .filter(p => !p.data.draft && !RESERVED.has(p.slug))
+        .map(post => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+---
+
+<BunzoLayout title={`${post.data.title} - Bunzo`}>
+    <div class="post-details-page">
+        <Breadcrumb slug={post.data.title} link="Blog" url="/blog" />
+
+        <div class="py-section">
+            <div class="container mx-auto px-4">
+                <PostDetails post={post} />
+                <PostAfterPlugins currentSlug={post.slug} category={post.data.category || ''} />
+            </div>
+        </div>
+    </div>
+</BunzoLayout>

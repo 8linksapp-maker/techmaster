@@ -1,4 +1,5 @@
 ---
+import { BLOG_BASE } from '../../lib/postUrl';
 import { getCollection } from 'astro:content';
 import { readData } from '../../lib/readData';
 
@@ -50,7 +51,7 @@ const hasPosts = heroPosts.length > 0;
                                             })()}
                                         </p>
                                         <h2 class="text-white text-3xl md:text-4xl lg:text-[45px] font-bold font-heading hover:text-accent transition-colors leading-tight">
-                                            <a href={`/blog/${post.slug}`}>
+                                            <a href={`${BLOG_BASE}/${post.slug}`}>
                                                 {post.data.title}
                                             </a>
                                         </h2>
@@ -69,7 +70,7 @@ const hasPosts = heroPosts.length > 0;
                                 </div>
                                 <div class="col-span-12 lg:col-span-6 order-first lg:order-last">
                                     <div class="rounded-[10px] overflow-hidden border-2 border-primary lg:h-[400px] p-2.5 sm:p-5 bg-white/5 backdrop-blur-sm">
-                                        <a href={`/blog/${post.slug}`}>
+                                        <a href={`${BLOG_BASE}/${post.slug}`}>
                                             {idx === 0 ? (
                                                 <img src={post.data.heroImage || post.data.image} alt={post.data.title} width="742" height="400" fetchpriority="high" decoding="async" class="w-full h-full object-cover rounded-xl shadow-2xl transition-transform duration-500 hover:scale-105">
                                             ) : (

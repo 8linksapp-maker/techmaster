@@ -25,7 +25,7 @@ function formatDate(date: Date) {
                 return <span class="ml-1 font-bold text-heading">{a.name}</span>;
             })()}
         </li>
-        <li class="relative mr-4 pr-6 after:w-1 after:h-1 after:bg-primary after:top-1/2 after:right-0 after:transform after:-translate-y-1/2 after:absolute after:content-[''] after:rounded-full last:after:hidden">
+        <li class="post-date relative mr-4 pr-6 after:w-1 after:h-1 after:bg-primary after:top-1/2 after:right-0 after:transform after:-translate-y-1/2 after:absolute after:content-[''] after:rounded-full last:after:hidden">
             {formatDate(post.data.pubDate)}
         </li>
         <li class="relative last:after:hidden">3 min read</li>
@@ -54,10 +54,49 @@ function formatDate(date: Date) {
 
     <div class="share-post sm:flex justify-between items-center py-8 mt-16 border-y border-gray-100 italic">
         <h4 class="text-xl font-bold text-primary mb-4 sm:mb-0">Compartilhe este artigo:</h4>
-        <div class="social-link flex justify-center sm:justify-end space-x-3">
-            <SocialIcon icon="icofont-facebook" url="#" styleClass="w-10 h-10 leading-10 rounded-full bg-primary/5 text-primary hover:bg-primary hover:text-white text-center transition-all" />
-            <SocialIcon icon="icofont-twitter" url="#" styleClass="w-10 h-10 leading-10 rounded-full bg-primary/5 text-primary hover:bg-primary hover:text-white text-center transition-all" />
-            <SocialIcon icon="icofont-linkedin" url="#" styleClass="w-10 h-10 leading-10 rounded-full bg-primary/5 text-primary hover:bg-primary hover:text-white text-center transition-all" />
+        <div class="social-link flex justify-center sm:justify-end space-x-3 post-share-buttons">
+            <a href="#" data-share="facebook" aria-label="Compartilhar no Facebook" class="w-10 h-10 leading-10 rounded-full bg-primary/5 text-primary hover:bg-primary hover:text-white text-center transition-all"><i class="icofont-facebook"></i></a>
+            <a href="#" data-share="twitter" aria-label="Compartilhar no Twitter/X" class="w-10 h-10 leading-10 rounded-full bg-primary/5 text-primary hover:bg-primary hover:text-white text-center transition-all"><i class="icofont-twitter"></i></a>
+            <a href="#" data-share="whatsapp" aria-label="Compartilhar no WhatsApp" class="w-10 h-10 leading-10 rounded-full bg-primary/5 text-primary hover:bg-primary hover:text-white text-center transition-all"><i class="icofont-whatsapp"></i></a>
+            <a href="#" data-share="linkedin" aria-label="Compartilhar no LinkedIn" class="w-10 h-10 leading-10 rounded-full bg-primary/5 text-primary hover:bg-primary hover:text-white text-center transition-all"><i class="icofont-linkedin"></i></a>
+            <a href="#" data-share="copy" aria-label="Copiar link" class="w-10 h-10 leading-10 rounded-full bg-primary/5 text-primary hover:bg-primary hover:text-white text-center transition-all"><i class="icofont-copy"></i></a>
         </div>
     </div>
 </article>
+
+<script>
+(function() {
+    function init() {
+        var buttons = document.querySelectorAll('.post-share-buttons [data-share]');
+        if (!buttons.length) return;
+        var url = encodeURIComponent(window.location.href);
+        var title = encodeURIComponent(document.title);
+        var urls = {
+            facebook: 'https://www.facebook.com/sharer/sharer.php?u=' + url,
+            twitter:  'https://twitter.com/intent/tweet?url=' + url + '&text=' + title,
+            whatsapp: 'https://wa.me/?text=' + title + '%20' + url,
+            linkedin: 'https://www.linkedin.com/sharing/share-offsite/?url=' + url,
+        };
+        buttons.forEach(function(btn) {
+            var platform = btn.getAttribute('data-share');
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (platform === 'copy') {
+                    navigator.clipboard?.writeText(window.location.href).then(function() {
+                        var icon = btn.querySelector('i');
+                        var orig = icon ? icon.className : '';
+                        if (icon) {
+                            icon.className = 'icofont-check';
+                            setTimeout(function() { icon.className = orig; }, 1500);
+                        }
+                    });
+                } else if (urls[platform]) {
+                    window.open(urls[platform], '_blank', 'noopener,width=600,height=450');
+                }
+            });
+        });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+})();
+</script>

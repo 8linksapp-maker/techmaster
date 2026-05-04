@@ -1,71 +1,66 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Loader2, LayoutTemplate } from 'lucide-react';
+import { Save, Loader2, LayoutTemplate, Plus, X } from 'lucide-react';
 import { triggerToast } from './CmsToaster';
 import { githubApi } from '../../lib/adminApi';
+
+const FILE_PATH = 'src/data/about.json';
+
+const DEFAULT: any = {
+    title: 'Sobre Nós',
+    intro: { title: '', description: '', image: '', features: [] as string[] },
+    mission: { title: 'Nossa Missão', description: '' },
+    vision: { title: 'Nossa Visão', description: '' },
+};
 
 export default function SobreEditor() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
-    const [sobre, setSobre] = useState<any>(null);
+    const [data, setData] = useState<any>(null);
     const [fileSha, setFileSha] = useState('');
-    const [pendingUploads, setPendingUploads] = useState<Record<string, File>>({});
+    const [pendingImage, setPendingImage] = useState<File | null>(null);
 
     useEffect(() => {
-        githubApi('read', 'src/data/sobre.json')
-            .then(data => { setSobre(JSON.parse(data?.content || "{}")); setFileSha(data.sha); })
-            .catch(err => setError(err.message))
+        githubApi('read', FILE_PATH)
+            .then((d: any) => {
+                const parsed = JSON.parse(d?.content || '{}');
+                setData({ ...DEFAULT, ...parsed, intro: { ...DEFAULT.intro, ...(parsed.intro || {}) }, mission: { ...DEFAULT.mission, ...(parsed.mission || {}) }, vision: { ...DEFAULT.vision, ...(parsed.vision || {}) } });
+                setFileSha(d.sha);
+            })
+            .catch(err => { setError(err.message); setData(DEFAULT); })
             .finally(() => setLoading(false));
     }, []);
 
     const fileToBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve((reader.result as string).split(',')[1]);
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
+        const r = new FileReader();
+        r.onload = () => resolve((r.result as string).split(',')[1]);
+        r.onerror = reject;
+        r.readAsDataURL(file);
     });
 
     const handleSave = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         setSaving(true); setError('');
-        triggerToast('Sincronizando Página Sobre...', 'progress', 20);
+        triggerToast('Salvando Sobre...', 'progress', 20);
         try {
-            let finalJson = { ...sobre };
-            for (const [keyPath, fileObj] of Object.entries(pendingUploads)) {
-                const base64Content = await fileToBase64(fileObj);
-                const fileExt = fileObj.name.split('.').pop() || 'jpg';
-                const ghPath = `public/uploads/${Date.now()}-${keyPath}.${fileExt}`;
-                await githubApi('write', ghPath, { content: base64Content, isBase64: true, message: `Upload imagem ${ghPath}` });
-                const publicUrlPath = ghPath.replace('public', '');
-                if (keyPath === 'heroImg') finalJson.hero.image = publicUrlPath;
-                if (keyPath === 'seoImg') { if (!finalJson.seo) finalJson.seo = {}; finalJson.seo.image = publicUrlPath; }
+            const final = { ...data };
+            if (pendingImage) {
+                const b64 = await fileToBase64(pendingImage);
+                const ghPath = `public/uploads/${Date.now()}-about.${pendingImage.name.split('.').pop() || 'jpg'}`;
+                await githubApi('write', ghPath, { content: b64, isBase64: true, message: `Upload imagem about` });
+                final.intro.image = ghPath.replace('public', '');
             }
-            const res = await githubApi('write', 'src/data/sobre.json', { content: JSON.stringify(finalJson, null, 2), sha: fileSha, message: 'CMS: Customização da Página Sobre' });
-            setFileSha(res.sha); setSobre(finalJson); setPendingUploads({});
-            triggerToast('Página Sobre atualizada com sucesso!', 'success', 100);
-        } catch (err: any) {
-            setError(err.message); triggerToast(`Erro: ${err.message}`, 'error');
-        } finally { setSaving(false); }
-    };
-
-    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, uiKey: string) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        setPendingUploads(prev => ({ ...prev, [uiKey]: file }));
-        const previewUrl = URL.createObjectURL(file);
-        if (uiKey === 'heroImg') setSobre({ ...sobre, hero: { ...sobre?.hero, image: previewUrl } });
-        if (uiKey === 'seoImg') setSobre({ ...sobre, seo: { ...sobre?.seo, image: previewUrl } });
-        e.target.value = '';
-    };
-
-    const updateField = (section: string, key: string, value: string) => {
-        setSobre({ ...sobre, [section]: { ...(sobre[section] || {}), [key]: value } });
+            const res = await githubApi('write', FILE_PATH, { content: JSON.stringify(final, null, 2), sha: fileSha, message: 'CMS: Pagina Sobre atualizada' });
+            setFileSha(res.sha); setData(final); setPendingImage(null);
+            triggerToast('Pagina Sobre atualizada!', 'success', 100);
+        } catch (err: any) { setError(err.message); triggerToast(`Erro: ${err.message}`, 'error'); }
+        finally { setSaving(false); }
     };
 
     if (loading) return (
         <div className="flex flex-col items-center justify-center p-32 text-slate-400 bg-white rounded-2xl border border-slate-200">
             <LayoutTemplate className="w-10 h-10 animate-pulse mb-6 text-slate-300" />
-            <p className="font-semibold text-sm animate-pulse text-slate-500">Buscando sobre.json...</p>
+            <p className="font-semibold text-sm animate-pulse text-slate-500">Buscando about.json...</p>
         </div>
     );
 
@@ -73,16 +68,19 @@ export default function SobreEditor() {
     const inputClass = "w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm";
     const labelClass = "block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1";
 
+    const setField = (section: string | null, key: string, value: any) => {
+        setData((d: any) => section ? { ...d, [section]: { ...(d[section] || {}), [key]: value } } : { ...d, [key]: value });
+    };
+
     return (
         <div className="max-w-4xl space-y-0 pb-32">
-            {/* Action bar */}
-            <div className="flex items-center justify-between bg-white p-4 px-6 rounded-2xl border border-slate-200 shadow-sm mb-6">
+            <div className="flex items-center justify-between bg-white p-4 px-6 rounded-2xl border border-slate-200 shadow-sm mb-6 sticky top-4 z-10">
                 <div>
-                    <h2 className="text-lg font-bold text-slate-800">Editar Página: Sobre Nós</h2>
-                    <p className="text-xs text-slate-500 mt-0.5">Edita o arquivo <code className="bg-slate-100 px-1 rounded">src/data/sobre.json</code></p>
+                    <h2 className="text-lg font-bold text-slate-800">Editar Pagina: Sobre Nos</h2>
+                    <p className="text-xs text-slate-500 mt-0.5">Edita o arquivo <code className="bg-slate-100 px-1 rounded">{FILE_PATH}</code></p>
                 </div>
                 <button onClick={handleSave} disabled={saving} className="bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all">
-                    {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                     {saving ? 'Salvando...' : 'Salvar'}
                 </button>
             </div>
@@ -91,40 +89,48 @@ export default function SobreEditor() {
 
             <form onSubmit={handleSave} className="space-y-6">
                 <div className={cardClass}>
-                    <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">1. Banner da História (Hero)</h3>
+                    <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">Cabecalho</h3>
+                    <div><label className={labelClass}>Titulo da pagina</label><input type="text" value={data?.title || ''} onChange={e => setField(null, 'title', e.target.value)} className={inputClass} /></div>
+                </div>
+
+                <div className={cardClass}>
+                    <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">1. Apresentacao (Intro)</h3>
                     <div className="space-y-4">
-                        <div><label className={labelClass}>Título Principal (H1)</label><input type="text" value={sobre?.hero?.title || ''} onChange={e => updateField('hero', 'title', e.target.value)} className={inputClass} /></div>
-                        <div><label className={labelClass}>Parágrafo Descritivo</label><textarea rows={4} value={sobre?.hero?.desc || ''} onChange={e => updateField('hero', 'desc', e.target.value)} className={`${inputClass} resize-y`} /></div>
+                        <div><label className={labelClass}>Titulo</label><input type="text" value={data?.intro?.title || ''} onChange={e => setField('intro', 'title', e.target.value)} className={inputClass} /></div>
+                        <div><label className={labelClass}>Descricao</label><textarea rows={4} value={data?.intro?.description || ''} onChange={e => setField('intro', 'description', e.target.value)} className={`${inputClass} resize-y`} /></div>
                         <div className="bg-slate-50 p-4 border border-slate-200 rounded-xl">
-                            <label className={labelClass}>Foto da Empresa</label>
-                            <input type="file" accept="image/*" className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 cursor-pointer" onChange={e => handleFileSelect(e, 'heroImg')} />
-                            {pendingUploads['heroImg'] && <span className="text-[10px] bg-slate-100 text-slate-800 px-2 py-1 rounded font-bold uppercase mt-2 inline-block">Upload Pendente</span>}
-                            {sobre?.hero?.image && <div className="mt-4 w-full h-[200px] border border-slate-300 rounded overflow-hidden"><img src={sobre?.hero?.image} className="w-full h-full object-cover" /></div>}
+                            <label className={labelClass}>Imagem</label>
+                            <input type="file" accept="image/*" className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 cursor-pointer" onChange={e => { const f = e.target.files?.[0]; if (f) { setPendingImage(f); setField('intro', 'image', URL.createObjectURL(f)); } e.target.value = ''; }} />
+                            {data?.intro?.image && <div className="mt-4 w-full h-[200px] border border-slate-300 rounded overflow-hidden"><img src={data.intro.image} className="w-full h-full object-cover" /></div>}
                         </div>
-                    </div>
-                </div>
-
-                <div className={cardClass}>
-                    <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">2. Conteúdo da História</h3>
-                    <div className="space-y-4">
-                        <div><label className={labelClass}>Título da Missão</label><input type="text" value={sobre?.content?.missionTitle || ''} onChange={e => updateField('content', 'missionTitle', e.target.value)} className={inputClass} /></div>
-                        <div><label className={labelClass}>Texto da Missão</label><textarea rows={4} value={sobre?.content?.missionText || ''} onChange={e => updateField('content', 'missionText', e.target.value)} className={`${inputClass} resize-y`} /></div>
-                        <hr className="border-slate-200" />
-                        <div><label className={labelClass}>Título da Equipe</label><input type="text" value={sobre?.content?.teamTitle || ''} onChange={e => updateField('content', 'teamTitle', e.target.value)} className={inputClass} /></div>
-                        <div><label className={labelClass}>Texto da Equipe</label><textarea rows={4} value={sobre?.content?.teamText || ''} onChange={e => updateField('content', 'teamText', e.target.value)} className={`${inputClass} resize-y`} /></div>
-                    </div>
-                </div>
-
-                <div className={cardClass}>
-                    <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">SEO</h3>
-                    <div className="space-y-4">
-                        <div><label className={labelClass}>Título SEO</label><input type="text" value={sobre?.seo?.title || ''} onChange={e => updateField('seo', 'title', e.target.value)} className={inputClass} placeholder="Sobre Nós | Nome do Site" /></div>
-                        <div><label className={labelClass}>Meta Descrição</label><textarea rows={3} value={sobre?.seo?.description || ''} onChange={e => updateField('seo', 'description', e.target.value)} className={`${inputClass} resize-y text-xs`} /></div>
                         <div>
-                            <label className={labelClass}>Imagem Social (Open Graph)</label>
-                            <input type="file" accept="image/*" onChange={e => handleFileSelect(e, 'seoImg')} className="text-[10px] w-full file:mr-2 file:py-1 file:px-2 file:border-0 file:bg-violet-50 file:text-violet-700" />
-                            {sobre?.seo?.image && <img src={sobre?.seo?.image} className="w-full aspect-video object-cover mt-3 rounded" />}
+                            <label className={labelClass}>Pontos Fortes (Features)</label>
+                            <div className="space-y-2">
+                                {(data?.intro?.features || []).map((f: string, i: number) => (
+                                    <div key={i} className="flex gap-2">
+                                        <input type="text" value={f} onChange={e => { const arr = [...data.intro.features]; arr[i] = e.target.value; setField('intro', 'features', arr); }} className={inputClass} />
+                                        <button type="button" onClick={() => setField('intro', 'features', data.intro.features.filter((_: any, j: number) => j !== i))} className="px-3 py-2 text-red-500 hover:bg-red-50 rounded-xl"><X className="w-4 h-4" /></button>
+                                    </div>
+                                ))}
+                                <button type="button" onClick={() => setField('intro', 'features', [...(data?.intro?.features || []), ''])} className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-violet-600 hover:bg-violet-50 rounded-xl"><Plus className="w-4 h-4" /> Adicionar feature</button>
+                            </div>
                         </div>
+                    </div>
+                </div>
+
+                <div className={cardClass}>
+                    <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">2. Missao</h3>
+                    <div className="space-y-4">
+                        <div><label className={labelClass}>Titulo</label><input type="text" value={data?.mission?.title || ''} onChange={e => setField('mission', 'title', e.target.value)} className={inputClass} /></div>
+                        <div><label className={labelClass}>Descricao</label><textarea rows={4} value={data?.mission?.description || ''} onChange={e => setField('mission', 'description', e.target.value)} className={`${inputClass} resize-y`} /></div>
+                    </div>
+                </div>
+
+                <div className={cardClass}>
+                    <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">3. Visao</h3>
+                    <div className="space-y-4">
+                        <div><label className={labelClass}>Titulo</label><input type="text" value={data?.vision?.title || ''} onChange={e => setField('vision', 'title', e.target.value)} className={inputClass} /></div>
+                        <div><label className={labelClass}>Descricao</label><textarea rows={4} value={data?.vision?.description || ''} onChange={e => setField('vision', 'description', e.target.value)} className={`${inputClass} resize-y`} /></div>
                     </div>
                 </div>
             </form>

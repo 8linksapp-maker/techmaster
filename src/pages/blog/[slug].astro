@@ -4,8 +4,11 @@ import BunzoLayout from '../../layouts/BunzoLayout.astro';
 import PostDetails from '../../components/bunzo/PostDetails.astro';
 import Breadcrumb from '../../components/bunzo/Breadcrumb.astro';
 import PostAfterPlugins from '../../plugins/_slots/PostAfterPlugins.astro';
+import { readData } from '../../lib/readData';
 
 export async function getStaticPaths() {
+  const siteConfig = readData('siteConfig.json', {}) as any;
+  if (siteConfig.postUrlPrefix !== 'blog') return [];
   const posts = await getCollection('blog');
   return posts.map((post) => ({
     params: { slug: post.slug },
