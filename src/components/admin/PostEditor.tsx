@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Save, AlertCircle, Loader2, ArrowLeft, Image as ImageIcon, Eye, Edit3, Video, ListChecks } from 'lucide-react';
 import { marked } from 'marked';
 import { triggerToast } from './CmsToaster';
@@ -6,9 +6,50 @@ import { githubApi } from '../../lib/adminApi';
 import { yamlEscape } from '../../lib/yamlEscape';
 import { normalizeCategories } from '../../lib/categorySlug';
 import { parseVideoUrl } from '../../lib/videoEmbed';
+import ImageInsertModal from './ImageInsertModal';
 
 interface PostEditorProps {
     filePath: string | null; // null = novo post
+}
+
+// Registra um blot de <figure> com <img> + <figcaption> pro Quill.
+// Sem isso, o Quill descarta figure/figcaption ao converter HTML colado pra Delta
+// (só formats registrados sobrevivem). Como BlockEmbed, o Quill serializa como um
+// embed atômico -> round-trip perfeito na inserção e ao reabrir o post salvo.
+let imageFigureRegistered = false;
+function registerImageFigureBlot(Quill: any) {
+    if (imageFigureRegistered) return;
+    const BlockEmbed = Quill.import('blots/block/embed');
+    class ImageFigure extends BlockEmbed {
+        static create(value: { src?: string; alt?: string; caption?: string }) {
+            const node = super.create();
+            node.setAttribute('class', 'post-figure');
+            const img = document.createElement('img');
+            img.setAttribute('src', value.src || '');
+            if (value.alt) img.setAttribute('alt', value.alt);
+            node.appendChild(img);
+            if (value.caption) {
+                const cap = document.createElement('figcaption');
+                cap.textContent = value.caption;
+                node.appendChild(cap);
+            }
+            return node;
+        }
+        static value(node: HTMLElement) {
+            const img = node.querySelector('img');
+            const cap = node.querySelector('figcaption');
+            return {
+                src: img ? img.getAttribute('src') : '',
+                alt: img ? (img.getAttribute('alt') || '') : '',
+                caption: cap ? (cap.textContent || '') : '',
+            };
+        }
+    }
+    (ImageFigure as any).blotName = 'imageFigure';
+    (ImageFigure as any).tagName = 'FIGURE';
+    (ImageFigure as any).className = 'post-figure';
+    Quill.register(ImageFigure, true);
+    imageFigureRegistered = true;
 }
 
 export default function PostEditor({ filePath }: PostEditorProps) {
@@ -27,17 +68,28 @@ export default function PostEditor({ filePath }: PostEditorProps) {
     const [prosInput, setProsInput] = useState('');
     const [consInput, setConsInput] = useState('');
     const quillRef = React.useRef<any>(null);
-    const quillFormats = ['header', 'bold', 'italic', 'underline', 'strike', 'list', 'bullet', 'blockquote', 'code-block', 'link', 'image', 'video'];
-    const quillModules = {
-        toolbar: [
-            [{ header: [1, 2, 3, 4, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ list: 'ordered' }, { list: 'bullet' }],
-            ['blockquote', 'code-block'],
-            ['link', 'image'],
-            ['clean'],
-        ],
+    const savedRangeRef = React.useRef<number>(0);
+    const [imageModalOpen, setImageModalOpen] = useState(false);
+    const quillFormats = ['header', 'bold', 'italic', 'underline', 'strike', 'list', 'bullet', 'blockquote', 'code-block', 'link', 'image', 'video', 'imageFigure'];
+    const openImageModal = () => {
+        const editor = quillRef.current?.getEditor?.();
+        const range = editor?.getSelection?.(true);
+        savedRangeRef.current = (range?.index ?? editor?.getLength?.() ?? 0);
+        setImageModalOpen(true);
     };
+    const quillModules = useMemo(() => ({
+        toolbar: {
+            container: [
+                [{ header: [1, 2, 3, 4, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                ['blockquote', 'code-block'],
+                ['link', 'image'],
+                ['clean'],
+            ],
+            handlers: { image: () => openImageModal() },
+        },
+    }), []);
 
     const insertVideoEmbed = () => {
         const info = parseVideoUrl(videoUrlInput);
@@ -84,6 +136,22 @@ export default function PostEditor({ filePath }: PostEditorProps) {
         triggerToast('Bloco Prós e Contras inserido.', 'success');
     };
 
+    const handleInsertImage = (dataUrl: string, alt: string, caption: string) => {
+        const editor = quillRef.current?.getEditor?.();
+        const idx = savedRangeRef.current ?? (editor?.getLength?.() ?? 0);
+        if (editor) {
+            editor.insertEmbed(idx, 'imageFigure', { src: dataUrl, alt, caption }, 'user');
+            editor.setSelection(idx + 1, 0);
+        } else {
+            const escAttr = (s: string) => s.replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c] || c));
+            const escTxt = (s: string) => s.replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c] || c));
+            const fig = `<figure class="post-figure"><img src="${dataUrl}" alt="${escAttr(alt)}" />${caption ? `<figcaption>${escTxt(caption)}</figcaption>` : ''}</figure><p></p>`;
+            setPost(p => ({ ...p, content: (p.content || '') + fig }));
+        }
+        setImageModalOpen(false);
+        triggerToast('Imagem inserida. Salve o artigo pra publicar.', 'success');
+    };
+
     const formatDateForInput = (dateStr: string) => {
         try {
             const d = new Date(dateStr);
@@ -96,12 +164,15 @@ export default function PostEditor({ filePath }: PostEditorProps) {
 
     const [post, setPost] = useState({
         title: '', slug: '', description: '', pubDate: new Date().toISOString().split('T')[0],
-        heroImage: '', category: '', author: '', draft: false, content: ''
+        heroImage: '', heroImageAlt: '', heroImageCaption: '', category: '', author: '', draft: false, content: ''
     });
 
     // Load Quill dynamically
     useEffect(() => {
-        import('react-quill-new').then(mod => setQuillEditor(() => mod.default));
+        import('react-quill-new').then(mod => {
+            if ((mod as any).Quill) registerImageFigureBlot((mod as any).Quill);
+            setQuillEditor(() => mod.default);
+        });
         import('react-quill-new/dist/quill.snow.css' as any);
     }, []);
 
@@ -130,7 +201,8 @@ export default function PostEditor({ filePath }: PostEditorProps) {
                         setPost({
                             title: extract('title'), slug: filePath.split('/').pop()?.replace('.md', '') || '',
                             description: extract('description'), pubDate: rawPubDate ? formatDateForInput(rawPubDate) : new Date().toISOString().split('T')[0],
-                            heroImage: extract('heroImage'), category: extract('category') || 'Geral', author: extract('author'),
+                            heroImage: extract('heroImage'), heroImageAlt: extract('heroImageAlt'), heroImageCaption: extract('heroImageCaption'),
+                            category: extract('category') || 'Geral', author: extract('author'),
                             draft: extract('draft') === 'true', content: parsedHtml
                         });
                     } else {
@@ -203,7 +275,7 @@ export default function PostEditor({ filePath }: PostEditorProps) {
             } else if (/^\d{4}-\d{2}-\d{2}$/.test(post.pubDate)) {
                 finalPubDate = `${post.pubDate}T${new Date().toISOString().slice(11, 19)}.000Z`;
             }
-            const markdown = `---\ntitle: "${yamlEscape(post.title)}"\ndescription: "${yamlEscape(post.description)}"\npubDate: "${finalPubDate}"\nheroImage: "${yamlEscape(finalHeroImage)}"\ncategory: "${yamlEscape(post.category)}"\nauthor: "${yamlEscape(post.author)}"\ndraft: ${post.draft}\n---\n${finalHtmlContent}`;
+            const markdown = `---\ntitle: "${yamlEscape(post.title)}"\ndescription: "${yamlEscape(post.description)}"\npubDate: "${finalPubDate}"\nheroImage: "${yamlEscape(finalHeroImage)}"\nheroImageAlt: "${yamlEscape(post.heroImageAlt)}"\nheroImageCaption: "${yamlEscape(post.heroImageCaption)}"\ncategory: "${yamlEscape(post.category)}"\nauthor: "${yamlEscape(post.author)}"\ndraft: ${post.draft}\n---\n${finalHtmlContent}`;
             const targetPath = `src/content/blog/${post.slug}.md`;
             const res = await githubApi('write', targetPath, { content: markdown, sha: fileSha || undefined, message: `CMS: ${isEditing ? 'Edição' : 'Criação'} do artigo ${post.slug}` });
             if (res.sha) setFileSha(res.sha);
@@ -424,10 +496,22 @@ export default function PostEditor({ filePath }: PostEditorProps) {
                             )}
                         </label>
                         {pendingUploads['heroImage'] && <span className="text-[10px] text-amber-600 font-bold block mt-2">Upload pendente — será enviado ao salvar</span>}
+                        <div className="mt-4">
+                            <label className={labelClass}>Texto alternativo (alt)</label>
+                            <input type="text" value={post.heroImageAlt} onChange={e => setPost(p => ({ ...p, heroImageAlt: e.target.value }))} className={inputClass} placeholder="Descreva a imagem" />
+                            <p className="text-xs text-slate-400 mt-1.5 ml-1">Descreve a imagem pra leitor de tela e SEO. Deixe vazio só se for puramente decorativa.</p>
+                        </div>
+                        <div className="mt-4">
+                            <label className={labelClass}>Legenda</label>
+                            <textarea rows={2} value={post.heroImageCaption} onChange={e => setPost(p => ({ ...p, heroImageCaption: e.target.value }))} className={`${inputClass} resize-none`} placeholder="Legenda da capa" />
+                            <p className="text-xs text-slate-400 mt-1.5 ml-1">Aparece abaixo da imagem no artigo.</p>
+                        </div>
                     </div>
 
                 </div>
             </div>
+
+            <ImageInsertModal open={imageModalOpen} onClose={() => setImageModalOpen(false)} onInsert={handleInsertImage} />
         </div>
     );
 }
