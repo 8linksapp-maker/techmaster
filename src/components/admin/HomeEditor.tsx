@@ -31,6 +31,9 @@ type HomeConfig = {
         postLimit: number;
     };
     partners: string[];
+    showSocialProof?: boolean;
+    socialProof?: { title: string; logos: { image: string; name: string }[] };
+    showAbout?: boolean;
 };
 
 const DEFAULT_CONFIG: HomeConfig = {
@@ -39,7 +42,10 @@ const DEFAULT_CONFIG: HomeConfig = {
     trending: { title: 'Tendências', slugs: [], postLimit: 6 },
     newsletter: { title: '', description: '', buttonText: 'Inscrever-se', bgImage: '' },
     recentPosts: { title: 'Artigos Recentes', searchPlaceholder: 'Buscar..', postLimit: 9 },
-    partners: []
+    partners: [],
+    showSocialProof: true,
+    socialProof: { title: '', logos: [] },
+    showAbout: true
 };
 
 function PostPicker({ value, posts, onChange, placeholder }: {
@@ -110,6 +116,14 @@ export default function HomeEditor() {
             next[idx] = previewUrl;
             setConfig(prev => ({ ...prev, partners: next }));
         }
+        if (uiKey.startsWith('socialLogo-')) {
+            const idx = parseInt(uiKey.split('-')[1]);
+            setConfig(prev => {
+                const sp = prev.socialProof || { title: '', logos: [] };
+                const logos = sp.logos.map((l, i) => i === idx ? { ...l, image: previewUrl } : l);
+                return { ...prev, socialProof: { ...sp, logos } };
+            });
+        }
         e.target.value = '';
     };
 
@@ -132,6 +146,12 @@ export default function HomeEditor() {
                 if (key.startsWith('partnerImg-')) {
                     const idx = parseInt(key.split('-')[1]);
                     finalConfig.partners[idx] = url;
+                }
+                if (key.startsWith('socialLogo-')) {
+                    const idx = parseInt(key.split('-')[1]);
+                    if (finalConfig.socialProof?.logos[idx]) {
+                        finalConfig.socialProof.logos[idx].image = url;
+                    }
                 }
             }
 
@@ -374,6 +394,92 @@ export default function HomeEditor() {
                         A seção de parceiros não será exibida na Home.
                     </div>
                 )}
+            </div>
+
+            {/* PROVA SOCIAL */}
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-indigo-500"></div>
+                <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-bold flex items-center gap-2 text-slate-800"><Users className="w-5 h-5 text-indigo-500" /> Prova Social</h3>
+                    <button
+                        onClick={() => setConfig(prev => ({ ...prev, showSocialProof: prev.showSocialProof === false ? true : false }))}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${config.showSocialProof !== false ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-400'}`}
+                    >
+                        {config.showSocialProof !== false ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                        {config.showSocialProof !== false ? 'SEÇÃO ATIVA' : 'SEÇÃO OCULTA'}
+                    </button>
+                </div>
+                <p className="text-xs text-slate-500 mb-6">Logos de clientes satisfeitos, exibidos em 3 colunas na home. Envie o arquivo do seu computador.</p>
+
+                {config.showSocialProof !== false && (
+                    <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
+                        <div>
+                            <label className={labelClass}>Título da Seção</label>
+                            <input
+                                type="text"
+                                placeholder="Ex: Empresas que confiam na gente"
+                                value={config.socialProof?.title || ''}
+                                onChange={e => setConfig(prev => ({ ...prev, socialProof: { title: e.target.value, logos: prev.socialProof?.logos || [] } }))}
+                                className={inputClass}
+                            />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {(config.socialProof?.logos || []).map((logo, i) => (
+                                <div key={i} className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+                                    <div className="group relative aspect-video bg-white border border-slate-200 rounded-xl flex items-center justify-center p-3 hover:border-indigo-400 transition-all">
+                                        {logo.image ? <img src={logo.image} className="max-w-full max-h-full object-contain" /> : <div className="text-slate-300"><FileImage /></div>}
+                                        <div className="absolute inset-x-2 bottom-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <label className="flex-1 bg-white border border-slate-200 p-2 rounded-xl flex items-center justify-center cursor-pointer hover:bg-indigo-50 shadow-sm">
+                                                <Upload className="w-3 h-3 text-indigo-600" />
+                                                <input type="file" accept="image/*" className="hidden" onChange={e => handleFileSelect(e, `socialLogo-${i}`)} />
+                                            </label>
+                                            <button onClick={() => setConfig(prev => ({ ...prev, socialProof: { title: prev.socialProof?.title || '', logos: (prev.socialProof?.logos || []).filter((_, idx) => idx !== i) } }))} className="bg-white border border-slate-200 p-2 rounded-xl text-rose-500 hover:bg-rose-50 shadow-sm">
+                                                <Trash2 className="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className={labelClass}>Nome do cliente (vira o alt)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Ex: Loja XPTO"
+                                            value={logo.name || ''}
+                                            onChange={e => setConfig(prev => ({ ...prev, socialProof: { title: prev.socialProof?.title || '', logos: (prev.socialProof?.logos || []).map((l, idx) => idx === i ? { ...l, name: e.target.value } : l) } }))}
+                                            className={inputClass}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                            <button onClick={() => setConfig(prev => ({ ...prev, socialProof: { title: prev.socialProof?.title || '', logos: [...(prev.socialProof?.logos || []), { image: '', name: '' }] } }))} className="min-h-[180px] border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-300 hover:border-indigo-500 hover:text-indigo-500 transition-all active:scale-95 group">
+                                <Plus className="w-6 h-6 mb-2 group-hover:scale-125 transition-transform" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Adicionar Logo</span>
+                            </button>
+                        </div>
+                    </div>
+                )}
+                {config.showSocialProof === false && (
+                    <div className="p-10 text-center border-2 border-dashed border-slate-100 rounded-2xl text-slate-300 text-sm italic font-medium">
+                        A seção de prova social não será exibida na Home.
+                    </div>
+                )}
+            </div>
+
+            {/* SOBRE NA HOME */}
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold flex items-center gap-2 text-slate-800"><Home className="w-5 h-5 text-emerald-500" /> Sobre na Home</h3>
+                    <button
+                        onClick={() => setConfig(prev => ({ ...prev, showAbout: prev.showAbout === false ? true : false }))}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${config.showAbout !== false ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}
+                    >
+                        {config.showAbout !== false ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                        {config.showAbout !== false ? 'SEÇÃO ATIVA' : 'SEÇÃO OCULTA'}
+                    </button>
+                </div>
+                <p className="text-xs text-slate-500">
+                    Esta seção puxa o conteúdo da página <strong>Sobre</strong>. Para editar o texto e a imagem, use <a href="/admin/sobre" className="text-emerald-600 font-semibold hover:underline">Sobre Nós → /admin/sobre</a>.
+                </p>
             </div>
         </div>
     );

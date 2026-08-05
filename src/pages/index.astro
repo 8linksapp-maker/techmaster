@@ -5,6 +5,8 @@ import RecentPostWrapperTwo from '../components/bunzo/RecentPostWrapperTwo.astro
 import NewsletterTwo from '../components/bunzo/NewsletterTwo.astro';
 import TrendingPostCarousel from '../components/bunzo/TrendingPostCarousel.astro';
 import TrustedPartnerCarousel from '../components/bunzo/TrustedPartnerCarousel.astro';
+import AboutHome from '../components/bunzo/AboutHome.astro';
+import SocialProofColumns from '../components/bunzo/SocialProofColumns.astro';
 import { readData } from '../lib/readData';
 
 const homeData = readData('home.json');
@@ -16,10 +18,12 @@ const homeData = readData('home.json');
     <div class="home-three">
         <BlogHeroThree />
         <RecentPostWrapperTwo />
+        {homeData.showAbout !== false && <AboutHome />}
         <div class="container mx-auto px-4 mb-20">
             <NewsletterTwo />
         </div>
         <TrendingPostCarousel />
+        {homeData.showSocialProof !== false && <SocialProofColumns />}
         {homeData.showPartners !== false && <TrustedPartnerCarousel />}
     </div>
 </BunzoLayout>

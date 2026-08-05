@@ -32,5 +32,16 @@
         "",
         ""
     ],
-    "showPartners": false
+    "showPartners": false,
+    "showSocialProof": true,
+    "socialProof": {
+        "title": "Empresas que confiam na gente",
+        "logos": [
+            {
+                "image": "/uploads/1784157145029-socialLogo-0.jpg",
+                "name": "Joao da betoneira"
+            }
+        ]
+    },
+    "showAbout": true
 }

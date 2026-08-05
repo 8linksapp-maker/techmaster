@@ -1,0 +1,31 @@
+---
+import { readData } from '../../lib/readData';
+
+const homeData = readData('home.json');
+const socialProof = homeData.socialProof || { title: '', logos: [] };
+const logos = (socialProof.logos || []).filter((logo: any) => logo && logo.image);
+---
+{logos.length > 0 && (
+    <div class="py-section bg-white">
+        <div class="container mx-auto px-4">
+            {socialProof.title && (
+                <h2 class="text-3xl md:text-4xl text-primary font-bold font-heading text-center mb-12 lg:mb-15">{socialProof.title}</h2>
+            )}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {logos.map((logo: any) => (
+                    <div class="flex items-center justify-center">
+                        <img
+                            src={logo.image}
+                            alt={logo.name || 'Logo de cliente'}
+                            loading="lazy"
+                            decoding="async"
+                            width="200"
+                            height="80"
+                            class="max-h-16 object-contain grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all"
+                        />
+                    </div>
+                ))}
+            </div>
+        </div>
+    </div>
+)}

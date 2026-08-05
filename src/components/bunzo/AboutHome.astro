@@ -1,0 +1,58 @@
+---
+import { readData } from '../../lib/readData';
+
+const aboutData = readData('about.json');
+const intro = aboutData.intro || { title: '', description: '', image: '', features: [] };
+const features = intro.features || [];
+const hasImage = Boolean(intro.image);
+---
+<div class="py-section bg-white">
+    <div class="container mx-auto px-4">
+        <div class:list={["grid grid-cols-1 gap-12 items-center", hasImage && "lg:grid-cols-2"]}>
+            {hasImage && (
+                <div class="relative rounded-2xl overflow-hidden order-1">
+                    <img
+                        src={intro.image}
+                        alt={intro.title || 'Sobre nós'}
+                        loading="lazy"
+                        decoding="async"
+                        width="640"
+                        height="480"
+                        class="w-full h-72 lg:h-96 object-cover rounded-2xl shadow-lg"
+                    />
+                </div>
+            )}
+            <div class="order-2">
+                {intro.title && (
+                    <h2 class="text-3xl md:text-4xl text-primary font-bold font-heading mb-6 leading-tight">{intro.title}</h2>
+                )}
+                {intro.description && (
+                    <p class="text-heading-light leading-relaxed mb-6">{intro.description}</p>
+                )}
+                {features.length > 0 && (
+                    <ul class="space-y-3 mb-8">
+                        {features.map((feature: string) => (
+                            <li class="flex items-center gap-3 text-heading-light">
+                                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-accent/10 text-accent flex items-center justify-center">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </span>
+                                <span>{feature}</span>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+                <a
+                    href="/sobre"
+                    class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-white font-bold text-sm hover:bg-accent transition-colors"
+                >
+                    Saiba mais
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
